@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>美股与A股ETF映射图谱</title>
+    <meta
+      name="description"
+      content="基于美股主题ETF强弱，映射A股场内ETF候选池的一页投资看板。"
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">US ETF to China ETF Map</p>
+          <h1>美股与A股ETF映射图谱</h1>
+          <p class="subtitle">多周期强弱、主题传导、A股场内ETF候选池</p>
+        </div>
+        <div class="status-panel" aria-label="数据更新状态">
+          <span id="update-time">读取中</span>
+          <span>每日 08:00 / 18:00 刷新</span>
+        </div>
+      </header>
+
+      <section class="summary-grid" id="summary-grid" aria-label="市场摘要"></section>
+
+      <section class="toolbar" aria-label="筛选工具">
+        <div class="segmented" role="tablist" aria-label="周期维度">
+          <button class="segment active" data-horizon="short" type="button">短期</button>
+          <button class="segment" data-horizon="mid" type="button">中期</button>
+          <button class="segment" data-horizon="long" type="button">长期</button>
+          <button class="segment" data-horizon="all" type="button">综合</button>
+        </div>
+        <div class="segmented compact" role="tablist" aria-label="信号类型">
+          <button class="segment active" data-signal="all" type="button">全部</button>
+          <button class="segment" data-signal="共振" type="button">共振</button>
+          <button class="segment" data-signal="传导" type="button">传导</button>
+          <button class="segment" data-signal="背离" type="button">背离</button>
+        </div>
+        <label class="search-box">
+          <span>搜索</span>
+          <input id="theme-search" type="search" placeholder="DRAM / 半导体 / 机器人" />
+        </label>
+      </section>
+
+      <section class="workspace">
+        <aside class="theme-list-panel" aria-label="美股主题ETF强弱榜">
+          <div class="panel-heading">
+            <div>
+              <h2>美股主题强弱</h2>
+              <p id="rank-caption">按短期强弱排序</p>
+            </div>
+            <button class="icon-btn" id="reset-view" type="button" title="重置视图" aria-label="重置视图">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7" />
+                <path d="M3 4v6h6" />
+              </svg>
+            </button>
+          </div>
+          <div class="theme-list" id="theme-list"></div>
+        </aside>
+
+        <section class="detail-panel" aria-label="主题映射详情">
+          <div id="detail-view"></div>
+        </section>
+      </section>
+
+      <section class="data-section" aria-label="A股ETF候选池">
+        <div class="panel-heading">
+          <div>
+            <h2>A股场内ETF候选池</h2>
+            <p>随当前主题联动筛选，显示映射分数、强弱与流动性</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>代码</th>
+                <th>名称</th>
+                <th>映射</th>
+                <th>1D</th>
+                <th>5D</th>
+                <th>20D</th>
+                <th>60D</th>
+                <th>120D</th>
+                <th>成交额</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody id="cn-etf-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
