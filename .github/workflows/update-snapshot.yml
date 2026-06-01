@@ -1,6 +1,14 @@
 name: Update ETF Map Snapshot
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/update-snapshot.yml"
+      - "scripts/generate_snapshot.py"
+      - "requirements.txt"
+      - "data/latest.json"
   schedule:
     - cron: "0 0 * * 1-5"
     - cron: "0 10 * * 1-5"
