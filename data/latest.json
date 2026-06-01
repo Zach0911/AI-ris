@@ -1,7 +1,7 @@
 {
   "date": "2026-06-01",
   "updatedAt": "2026-06-01T22:39:03+08:00",
-  "sourceNote": "MVP样例数据；结构兼容后续yfinance、AkShare、finance-all-in-one生成结果。",
+  "sourceNote": "最小可用版本样例数据；结构兼容后续免费行情源和本地金融数据工具生成结果。",
   "periods": [
     "1d",
     "5d",

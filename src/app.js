@@ -149,12 +149,12 @@ function renderThemeList(themes) {
 
 function renderMetricStrip(theme) {
   const metrics = [
-    ["1D", theme.us.returns["1d"]],
-    ["5D", theme.us.returns["5d"]],
-    ["20D", theme.us.returns["20d"]],
-    ["60D", theme.us.returns["60d"]],
-    ["120D", theme.us.returns["120d"]],
-    ["YTD", theme.us.returns.ytd],
+    ["1日", theme.us.returns["1d"]],
+    ["5日", theme.us.returns["5d"]],
+    ["20日", theme.us.returns["20d"]],
+    ["60日", theme.us.returns["60d"]],
+    ["120日", theme.us.returns["120d"]],
+    ["年初至今", theme.us.returns.ytd],
   ];
   return `
     <div class="metric-strip">

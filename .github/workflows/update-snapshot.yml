@@ -1,4 +1,4 @@
-name: Update ETF Map Snapshot
+name: 更新ETF映射快照
 
 on:
   push:
@@ -28,16 +28,16 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - name: Install free data dependencies
+      - name: 安装免费数据依赖
         run: python -m pip install -r requirements.txt
 
-      - name: Generate snapshot
+      - name: 生成数据快照
         run: python scripts/generate_snapshot.py --skip-cn
 
-      - name: Commit snapshot
+      - name: 提交数据快照
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/latest.json
-          git diff --staged --quiet || git commit -m "data: update ETF map snapshot"
+          git diff --staged --quiet || git commit -m "data: 更新ETF映射快照"
           git push
