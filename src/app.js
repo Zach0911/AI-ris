@@ -96,19 +96,29 @@ function renderSummary(themes) {
   const cnCount = new Set(data.themes.flatMap((theme) => theme.cn.map((item) => item.code))).size;
 
   $("#summary-grid").innerHTML = [
-    { label: "覆盖主题", value: total, note: "美股主题ETF池" },
-    { label: "A股ETF", value: cnCount, note: "场内候选标的" },
-    { label: "共振", value: sync, note: "中美同向，优先观察" },
-    { label: "传导", value: lead, note: "美股先动，观察跟随" },
-    { label: "背离", value: diverge, note: "不同步，二次确认" },
-    { label: "当前最强", value: strongest.name, note: `${strongest.us.primary} · ${getThemeScore(strongest)}分` },
+    { label: "美股主题", value: total, unit: "个", note: "主题ETF池", icon: "trend" },
+    { label: "A股ETF", value: cnCount, unit: "只", note: "场内候选标的", icon: "fund" },
+    { label: "共振", value: sync, unit: "组", note: "两边同向，优先观察", icon: "sync" },
+    { label: "传导", value: lead, unit: "组", note: "美股先动，观察跟随", icon: "lead" },
+    { label: "背离", value: diverge, unit: "组", note: "不同步，二次确认", icon: "warn" },
+    {
+      label: "当前最强",
+      value: strongest.name,
+      unit: "",
+      note: `${strongest.us.primary} · ${getThemeScore(strongest)}分`,
+      icon: "chip",
+      accent: true,
+    },
   ]
     .map(
       (item) => `
-        <article class="summary-card">
-          <span>${item.label}</span>
-          <strong>${item.value}</strong>
-          <em>${item.note}</em>
+        <article class="summary-card ${item.accent ? "summary-card-accent" : ""}">
+          <i class="summary-icon ${item.icon}" aria-hidden="true"></i>
+          <div>
+            <span>${item.label}</span>
+            <strong>${item.value}<small>${item.unit}</small></strong>
+            <em>${item.note}</em>
+          </div>
         </article>
       `,
     )
@@ -121,7 +131,14 @@ function renderThemeList(themes) {
   const selected = getSelectedTheme(themes);
   if (selected.id !== state.selectedId) state.selectedId = selected.id;
 
-  $("#theme-list").innerHTML = themes
+  $("#theme-list").innerHTML = `
+    <div class="theme-list-head" aria-hidden="true">
+      <span>美股主题强弱</span>
+      <span>主ETF</span>
+      <span>强度</span>
+      <span>涨跌幅</span>
+    </div>
+    ${themes
     .map((theme, index) => {
       const score = getThemeScore(theme);
       const active = theme.id === state.selectedId ? "active" : "";
@@ -142,13 +159,17 @@ function renderThemeList(themes) {
           </span>
           <span class="theme-metrics">
             <b>${score}</b>
-            <small>${fmtPct(periodReturn)}</small>
+            <i class="mini-bar" style="--value:${score}%"></i>
+          </span>
+          <span class="theme-return ${periodReturn >= 0 ? "up" : "down"}">
+            ${fmtPct(periodReturn)}
           </span>
           ${renderSignalPill(theme.signal)}
         </button>
       `;
     })
-    .join("");
+    .join("")}
+  `;
 
   document.querySelectorAll(".theme-row").forEach((row) => {
     row.addEventListener("click", () => {
@@ -172,7 +193,8 @@ function renderMetricStrip(theme) {
       ${metrics
         .map(
           ([label, value]) => `
-            <div>
+            <div class="metric-item">
+              <i aria-hidden="true"></i>
               <span>${label}</span>
               <strong class="${value >= 0 ? "up" : "down"}">${fmtPct(value)}</strong>
             </div>
@@ -212,54 +234,60 @@ function renderDetail(theme) {
   $("#detail-view").innerHTML = `
     <div class="detail-header">
       <div>
-        ${renderSignalPill(theme.signal)}
         <h2>${theme.name}</h2>
         <p>${theme.lead}</p>
       </div>
-      <div class="confidence">
-        <span>置信度</span>
-        <strong>${theme.confidence}</strong>
-      </div>
+      ${renderSignalPill(theme.signal)}
     </div>
 
-    <div class="us-card">
-      <div>
-        <p class="eyebrow">美股主映射</p>
-        <h3>${theme.us.primary}</h3>
-        <span>${theme.us.etfs.join(" / ")}</span>
+    <div class="detail-layout">
+      <div class="detail-main">
+        <div class="us-card">
+          <div>
+            <p class="eyebrow">美股映射</p>
+            <h3>${theme.us.primary}</h3>
+            <span>${theme.us.etfs.join(" / ")}</span>
+          </div>
+          <div class="confidence">
+            <span>置信度</span>
+            <strong>${theme.confidence}</strong>
+          </div>
+        </div>
+
+        ${renderMetricStrip(theme)}
+        ${renderBars(theme)}
+
+        <div class="signal-explain">
+          <b>${theme.signal}说明</b>
+          <span>${signalDescriptions[theme.signal]}</span>
+        </div>
+
+        <div class="tag-row" aria-label="主题标签">
+          ${theme.tags.map((tag) => `<span>${tag}</span>`).join("")}
+        </div>
+
+        <div class="reason-grid">
+          ${bestCn.reasons.map((reason) => `<div>${reason}</div>`).join("")}
+        </div>
       </div>
-      <div class="score-ring" style="--score:${getThemeScore(theme)}">
-        <strong>${getThemeScore(theme)}</strong>
-        <span>${horizonLabels[state.horizon]}</span>
-      </div>
-    </div>
 
-    ${renderMetricStrip(theme)}
-    ${renderBars(theme)}
-
-    <div class="signal-explain">
-      <b>${theme.signal}是什么意思？</b>
-      <span>${signalDescriptions[theme.signal]}</span>
-    </div>
-
-    <div class="tag-row" aria-label="主题标签">
-      ${theme.tags.map((tag) => `<span>${tag}</span>`).join("")}
-    </div>
-
-    <div class="mapping-focus">
-      <div>
-        <p class="eyebrow">A股首选候选</p>
-        <h3>${bestCn.code} · ${bestCn.name}</h3>
-        <p>${bestCn.index}</p>
-      </div>
-      <div class="mapping-score">
-        <span>映射</span>
-        <strong>${bestCn.mappingScore}</strong>
-      </div>
-    </div>
-
-    <div class="reason-grid">
-      ${bestCn.reasons.map((reason) => `<div>${reason}</div>`).join("")}
+      <aside class="detail-side">
+        <div class="score-ring" style="--score:${getThemeScore(theme)}">
+          <span>强度</span>
+          <strong>${getThemeScore(theme)}</strong>
+          <em>${horizonLabels[state.horizon]}</em>
+        </div>
+        <div class="mapping-focus">
+          <p class="eyebrow">相关ETF</p>
+          <h3>${bestCn.code}</h3>
+          <strong>${bestCn.name}</strong>
+          <span>${bestCn.index}</span>
+          <div class="mapping-score">
+            <span>映射分</span>
+            <b>${bestCn.mappingScore}</b>
+          </div>
+        </div>
+      </aside>
     </div>
   `;
 }
@@ -275,7 +303,7 @@ function renderCnTable(theme) {
             <span class="name-cell">${item.name}</span>
             <small>${item.index}</small>
           </td>
-          <td><span class="score-badge">${item.mappingScore}</span></td>
+          <td><span class="table-bar" style="--value:${item.mappingScore}%"><i></i><b>${item.mappingScore}</b></span></td>
           <td class="${item.returns["1d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["1d"])}</td>
           <td class="${item.returns["5d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["5d"])}</td>
           <td class="${item.returns["20d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["20d"])}</td>
