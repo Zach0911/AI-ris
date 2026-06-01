@@ -1,0 +1,4 @@
+interface:
+  display_name: "US-CN ETF Map"
+  short_description: "Build and maintain a US-to-China ETF mapping dashboard"
+  default_prompt: "Use $us-cn-etf-map to refresh, validate, or extend the US-to-China ETF mapping dashboard."

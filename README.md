@@ -25,6 +25,16 @@ python3 -m http.server 5173
 http://localhost:5173
 ```
 
+## 作为 Codex Skill 使用
+
+仓库根目录已包含 `SKILL.md` 和 `agents/openai.yaml`，可作为 `us-cn-etf-map` skill 使用。适合让 Codex 刷新快照、扩展主题映射、维护数据结构、验证静态看板或准备 GitHub Pages 部署。
+
+基础校验：
+
+```bash
+python3 scripts/e2e_smoke.py
+```
+
 ## 数据刷新
 
 默认快照位于：

@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+"""End-to-end smoke test for the static ETF mapping dashboard."""
+
+from __future__ import annotations
+
+import json
+import socket
+import subprocess
+import sys
+import time
+import urllib.request
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SNAPSHOT = ROOT / "data" / "latest.json"
+REQUIRED_FILES = [
+    "index.html",
+    "src/app.js",
+    "src/styles.css",
+    "src/data.js",
+    "data/latest.json",
+]
+
+
+def run_snapshot() -> None:
+    subprocess.run(
+        [sys.executable, "scripts/generate_snapshot.py", "--skip-us", "--skip-cn"],
+        cwd=ROOT,
+        check=True,
+    )
+
+
+def assert_snapshot_schema() -> None:
+    data = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+    assert data.get("themes"), "themes[] is empty"
+    required_theme = {"id", "name", "signal", "confidence", "lead", "tags", "us", "cn"}
+    required_us = {"primary", "etfs", "returns", "rel", "strength"}
+    required_cn = {"code", "name", "index", "returns", "amount", "mappingScore", "status", "reasons"}
+    valid_signals = {"共振", "传导", "背离"}
+
+    for theme in data["themes"]:
+        missing = required_theme - theme.keys()
+        assert not missing, f"{theme.get('id', '<unknown>')} missing theme fields: {sorted(missing)}"
+        assert theme["signal"] in valid_signals, f"invalid signal: {theme['signal']}"
+        assert required_us <= theme["us"].keys(), f"{theme['id']} missing us fields"
+        assert {"short", "mid", "long", "all"} <= theme["us"]["strength"].keys(), f"{theme['id']} missing strength keys"
+        assert theme["cn"], f"{theme['id']} has no A-share ETF candidates"
+        for item in theme["cn"]:
+            missing_cn = required_cn - item.keys()
+            assert not missing_cn, f"{theme['id']}:{item.get('code', '<unknown>')} missing cn fields: {sorted(missing_cn)}"
+            assert item["status"] in valid_signals, f"invalid candidate status: {item['status']}"
+
+
+def assert_static_server() -> None:
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        port = sock.getsockname()[1]
+
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    try:
+        base = f"http://127.0.0.1:{port}"
+        deadline = time.time() + 5
+        last_error: Exception | None = None
+        while time.time() < deadline:
+            try:
+                for path in REQUIRED_FILES:
+                    with urllib.request.urlopen(f"{base}/{path}", timeout=2) as response:
+                        body = response.read().decode("utf-8", errors="replace")
+                    assert response.status == 200, f"{path} returned {response.status}"
+                    assert body.strip(), f"{path} returned empty body"
+                break
+            except Exception as exc:  # pragma: no cover - diagnostic loop
+                last_error = exc
+                time.sleep(0.2)
+        else:
+            raise AssertionError(f"static server check failed: {last_error}") from last_error
+    finally:
+        proc.terminate()
+        try:
+            proc.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+
+
+def main() -> None:
+    run_snapshot()
+    assert_snapshot_schema()
+    assert_static_server()
+    print("OK: end-to-end smoke test passed")
+
+
+if __name__ == "__main__":
+    main()
