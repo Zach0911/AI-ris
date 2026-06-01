@@ -22,6 +22,12 @@ const signalClass = {
   背离: "diverge",
 };
 
+const signalDescriptions = {
+  共振: "美股主题ETF与A股ETF在多个周期同向走强或走弱，说明跨市场映射更顺畅，适合优先观察。",
+  传导: "美股主题ETF已经先动，A股ETF尚未完全跟上，适合观察隔夜到A股开盘后的补涨或补跌传导。",
+  背离: "美股主题ETF与A股ETF走势不同步或方向相反，说明本土因素影响更强，需要二次确认。",
+};
+
 const $ = (selector) => document.querySelector(selector);
 
 function fmtPct(value) {
@@ -33,6 +39,11 @@ function fmtPct(value) {
 function fmtAmount(value) {
   if (!value) return "-";
   return `${value.toFixed(1)}亿`;
+}
+
+function renderSignalPill(signal) {
+  const description = signalDescriptions[signal] || "暂无信号说明。";
+  return `<span class="signal-pill ${signalClass[signal]}" title="${description}" aria-label="${signal}：${description}">${signal}</span>`;
 }
 
 function getThemeScore(theme) {
@@ -87,9 +98,9 @@ function renderSummary(themes) {
   $("#summary-grid").innerHTML = [
     { label: "覆盖主题", value: total, note: "美股主题ETF池" },
     { label: "A股ETF", value: cnCount, note: "场内候选标的" },
-    { label: "共振", value: sync, note: "中美同步走强" },
-    { label: "传导", value: lead, note: "美股领先观察" },
-    { label: "背离", value: diverge, note: "需要确认" },
+    { label: "共振", value: sync, note: "中美同向，优先观察" },
+    { label: "传导", value: lead, note: "美股先动，观察跟随" },
+    { label: "背离", value: diverge, note: "不同步，二次确认" },
     { label: "当前最强", value: strongest.name, note: `${strongest.us.primary} · ${getThemeScore(strongest)}分` },
   ]
     .map(
@@ -133,7 +144,7 @@ function renderThemeList(themes) {
             <b>${score}</b>
             <small>${fmtPct(periodReturn)}</small>
           </span>
-          <span class="signal-pill ${signalClass[theme.signal]}">${theme.signal}</span>
+          ${renderSignalPill(theme.signal)}
         </button>
       `;
     })
@@ -201,7 +212,7 @@ function renderDetail(theme) {
   $("#detail-view").innerHTML = `
     <div class="detail-header">
       <div>
-        <span class="signal-pill ${signalClass[theme.signal]}">${theme.signal}</span>
+        ${renderSignalPill(theme.signal)}
         <h2>${theme.name}</h2>
         <p>${theme.lead}</p>
       </div>
@@ -225,6 +236,11 @@ function renderDetail(theme) {
 
     ${renderMetricStrip(theme)}
     ${renderBars(theme)}
+
+    <div class="signal-explain">
+      <b>${theme.signal}是什么意思？</b>
+      <span>${signalDescriptions[theme.signal]}</span>
+    </div>
 
     <div class="tag-row" aria-label="主题标签">
       ${theme.tags.map((tag) => `<span>${tag}</span>`).join("")}
@@ -266,7 +282,7 @@ function renderCnTable(theme) {
           <td class="${item.returns["60d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["60d"])}</td>
           <td class="${item.returns["120d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["120d"])}</td>
           <td>${fmtAmount(item.amount)}</td>
-          <td><span class="signal-pill ${signalClass[item.status]}">${item.status}</span></td>
+          <td>${renderSignalPill(item.status)}</td>
         </tr>
       `,
     )

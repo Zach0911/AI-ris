@@ -164,6 +164,7 @@ td small {
   z-index: 10;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 16px;
   padding: 12px;
@@ -195,6 +196,26 @@ td small {
 .segment.active {
   background: var(--primary);
   color: white;
+}
+
+.signal-guide {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.signal-guide span {
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.signal-guide b {
+  color: var(--ink);
 }
 
 .search-box {
@@ -370,6 +391,23 @@ td small {
 .signal-pill.diverge {
   background: var(--green-soft);
   color: var(--green);
+}
+
+.signal-explain {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.signal-explain b {
+  color: var(--ink);
+  font-size: 14px;
 }
 
 .detail-header {
@@ -669,6 +707,10 @@ td small,
   .search-box {
     width: 100%;
     margin-left: 0;
+  }
+
+  .signal-guide {
+    width: 100%;
   }
 
   .search-box input {
