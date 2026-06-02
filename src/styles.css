@@ -146,34 +146,58 @@ td small {
 
 .page-tabs {
   display: inline-flex;
-  gap: 0;
-  overflow: hidden;
-  margin-bottom: 16px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.72);
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 6px;
+  border: 1px solid rgba(176, 194, 220, 0.72);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
   box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(12px);
 }
 
 .page-tab {
+  position: relative;
   min-height: 42px;
-  min-width: 118px;
-  padding: 0 20px;
+  min-width: 124px;
+  padding: 0 18px;
   border: 0;
-  border-right: 1px solid var(--line);
+  border-radius: 9px;
   background: transparent;
-  color: var(--ink);
+  color: var(--muted);
+  font-size: 15px;
   font-weight: 850;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
-.page-tab:last-child {
-  border-right: 0;
+.page-tab:hover,
+.page-tab:focus-visible {
+  background: rgba(226, 239, 255, 0.72);
+  color: var(--primary-2);
 }
 
 .page-tab.active {
-  background: linear-gradient(180deg, #eaf4ff, #d8eaff);
+  background: linear-gradient(180deg, #ffffff, #dcecff);
   color: var(--primary-2);
-  box-shadow: inset 0 -2px 0 var(--primary);
+  box-shadow:
+    inset 0 0 0 1px rgba(8, 117, 222, 0.24),
+    0 8px 18px rgba(8, 117, 222, 0.16);
+}
+
+.page-tab.active::after {
+  position: absolute;
+  right: 12px;
+  bottom: 7px;
+  left: 12px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--primary);
+  content: "";
 }
 
 .help-label {
