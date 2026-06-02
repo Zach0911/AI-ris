@@ -1096,78 +1096,135 @@ td small,
 }
 
 @media (min-width: 1181px) {
-  .workspace {
-    height: clamp(620px, calc(100dvh - 360px), 780px);
-  }
-
-  .theme-list-panel,
-  .detail-stack {
-    height: 100%;
-    min-height: 0;
-    overflow: auto;
-  }
-
-  .detail-stack {
-    grid-template-rows: minmax(0, 1fr) auto;
-  }
-
-  .detail-panel {
-    overflow: auto;
-  }
-
-  .detail-stack .data-section .table-wrap {
-    max-height: 190px;
-  }
-
   .theme-list-panel {
     position: sticky;
     top: 84px;
-    max-height: none;
+    max-height: calc(100dvh - 104px);
+    overflow: auto;
   }
 }
 
 @media (min-width: 1181px) and (max-width: 1500px) {
   .detail-header {
-    padding: 18px 18px 0;
+    padding: 14px 18px 0;
+    margin-bottom: 8px;
   }
 
   .detail-header h2 {
-    font-size: 34px;
+    font-size: 31px;
   }
 
   .detail-header p {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .detail-layout {
-    grid-template-columns: minmax(0, 1fr) 210px;
-    gap: 16px;
-    padding: 0 18px 18px;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    gap: 14px;
+    padding: 0 18px 14px;
   }
 
   .detail-side {
-    padding-left: 16px;
+    gap: 12px;
+    padding-left: 14px;
   }
 
   .score-ring {
-    width: 170px;
-    height: 170px;
+    width: 150px;
+    height: 150px;
   }
 
   .score-ring strong {
-    font-size: 42px;
+    font-size: 36px;
+  }
+
+  .score-ring em {
+    font-size: 11px;
+  }
+
+  .us-card,
+  .mapping-focus {
+    margin-bottom: 10px;
+    padding: 10px 12px;
   }
 
   .metric-strip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .metric-item {
+    gap: 3px;
+    padding: 6px 5px;
+  }
+
+  .metric-period {
+    min-height: 20px;
+    font-size: 11px;
   }
 
   .metric-strip strong {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .score-bars {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 10px;
+    margin-bottom: 10px;
+  }
+
+  .score-bar {
+    grid-template-columns: 42px 1fr 28px;
+    gap: 8px;
+  }
+
+  .score-bar span,
+  .score-bar b {
+    font-size: 14px;
+  }
+
+  .bar-track {
+    height: 9px;
+  }
+
+  .signal-explain {
+    margin-bottom: 10px;
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+
+  .tag-row {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .tag-row span {
+    padding: 4px 7px;
+    font-size: 12px;
+  }
+
+  .reason-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .reason-grid div {
+    min-height: 52px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .detail-side .mapping-focus h3 {
+    font-size: 18px;
+  }
+
+  .detail-side .mapping-focus strong {
+    font-size: 15px;
+  }
+
+  .detail-side .mapping-focus > span {
+    font-size: 12px;
   }
 }
 
