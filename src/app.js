@@ -6,6 +6,7 @@ const state = {
   horizon: "short",
   signal: "all",
   query: "",
+  pageTab: "radar",
   selectedId: data.themes[0].id,
 };
 
@@ -28,6 +29,9 @@ const signalDescriptions = {
   背离: "美股主题ETF与A股ETF走势不同步或方向相反，说明本土因素影响更强，需要二次确认。",
 };
 
+const strengthDescription =
+  "强度是按当前周期下美股主ETF的涨跌幅、趋势延续和相对排名综合计算的0-100分，分数越高代表该主题越强。";
+
 const $ = (selector) => document.querySelector(selector);
 
 function fmtPct(value) {
@@ -44,6 +48,10 @@ function fmtAmount(value) {
 function renderSignalPill(signal) {
   const description = signalDescriptions[signal] || "暂无信号说明。";
   return `<span class="signal-pill ${signalClass[signal]}" title="${description}" aria-label="${signal}：${description}">${signal}</span>`;
+}
+
+function renderHelp(label, description) {
+  return `<span class="help-label">${label} <button class="help-dot" type="button" title="${description}" aria-label="${label}说明">?</button></span>`;
 }
 
 function getThemeScore(theme) {
@@ -132,37 +140,37 @@ function renderThemeList(themes) {
   if (selected.id !== state.selectedId) state.selectedId = selected.id;
 
   $("#theme-list").innerHTML = `
-    <div class="theme-list-head" aria-hidden="true">
-      <span>美股主题强弱</span>
+    <div class="theme-list-head">
+      <span>主题</span>
       <span>主ETF</span>
-      <span>强度</span>
-      <span>涨跌幅</span>
+      <span>${renderHelp("强度", strengthDescription)}</span>
+      <span>近1日</span>
+      <span>近1周</span>
+      <span>信号</span>
     </div>
     ${themes
     .map((theme, index) => {
       const score = getThemeScore(theme);
       const active = theme.id === state.selectedId ? "active" : "";
-      const periodReturn =
-        state.horizon === "short"
-          ? theme.us.returns["5d"]
-          : state.horizon === "mid"
-            ? theme.us.returns["20d"]
-            : state.horizon === "long"
-              ? theme.us.returns["120d"]
-              : theme.us.returns.ytd;
+      const oneDayReturn = theme.us.returns["1d"];
+      const oneWeekReturn = theme.us.returns["5d"];
       return `
         <button class="theme-row ${active}" data-theme-id="${theme.id}" type="button">
           <span class="rank">${String(index + 1).padStart(2, "0")}</span>
           <span class="theme-main">
             <strong>${theme.name}</strong>
-            <small>${theme.us.primary} · ${theme.us.etfs.join(" / ")}</small>
+            <small>${theme.us.etfs.join(" / ")}</small>
           </span>
+          <span class="theme-primary">${theme.us.primary}</span>
           <span class="theme-metrics">
             <b>${score}</b>
             <i class="mini-bar" style="--value:${score}%"></i>
           </span>
-          <span class="theme-return ${periodReturn >= 0 ? "up" : "down"}">
-            ${fmtPct(periodReturn)}
+          <span class="theme-return ${oneDayReturn >= 0 ? "up" : "down"}">
+            ${fmtPct(oneDayReturn)}
+          </span>
+          <span class="theme-return ${oneWeekReturn >= 0 ? "up" : "down"}">
+            ${fmtPct(oneWeekReturn)}
           </span>
           ${renderSignalPill(theme.signal)}
         </button>
@@ -194,8 +202,7 @@ function renderMetricStrip(theme) {
         .map(
           ([label, value]) => `
             <div class="metric-item">
-              <i aria-hidden="true"></i>
-              <span>${label}</span>
+              <span class="metric-period">${label}</span>
               <strong class="${value >= 0 ? "up" : "down"}">${fmtPct(value)}</strong>
             </div>
           `,
@@ -317,6 +324,15 @@ function renderCnTable(theme) {
     .join("");
 }
 
+function renderPageTabs() {
+  document.querySelectorAll("[data-page-tab]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.pageTab === state.pageTab);
+  });
+  document.querySelectorAll("[data-page-panel]").forEach((panel) => {
+    panel.classList.toggle("hidden", panel.dataset.pagePanel !== state.pageTab);
+  });
+}
+
 function renderEmpty() {
   $("#theme-list").innerHTML = `<div class="empty-state">没有匹配主题，换个关键词试试。</div>`;
   $("#detail-view").innerHTML = `<div class="empty-state">暂无可展示映射。</div>`;
@@ -327,6 +343,7 @@ function render() {
   const themes = getFilteredThemes();
   $("#update-time").textContent = `更新 ${data.updatedAt.replace("T", " ").slice(0, 16)}`;
   renderSummary(themes);
+  renderPageTabs();
 
   if (!themes.length) {
     renderEmpty();
@@ -340,6 +357,13 @@ function render() {
 }
 
 function bindEvents() {
+  document.querySelectorAll("[data-page-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.pageTab = button.dataset.pageTab;
+      renderPageTabs();
+    });
+  });
+
   document.querySelectorAll("[data-horizon]").forEach((button) => {
     button.addEventListener("click", () => {
       document.querySelectorAll("[data-horizon]").forEach((item) => item.classList.remove("active"));

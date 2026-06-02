@@ -3,19 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>美股与A股ETF映射图谱</title>
+    <title>跨市ETF雷达</title>
     <meta
       name="description"
       content="基于美股主题ETF强弱，映射A股场内ETF候选池的一页投资看板。"
     />
-    <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="stylesheet" href="./src/styles.css?v=20260602b" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <div>
           <p class="eyebrow">美股主题到A股ETF映射</p>
-          <h1>美股与A股ETF映射图谱</h1>
+          <h1>跨市ETF雷达</h1>
           <p class="subtitle">多周期强弱、主题传导、A股场内ETF候选池</p>
         </div>
         <div class="status-panel" aria-label="数据更新状态">
@@ -24,9 +24,14 @@
         </div>
       </header>
 
-      <section class="summary-grid" id="summary-grid" aria-label="市场摘要"></section>
+      <nav class="page-tabs" aria-label="页面板块">
+        <button class="page-tab active" data-page-tab="radar" type="button">主题雷达</button>
+        <button class="page-tab" data-page-tab="people" type="button">人物跟踪</button>
+      </nav>
 
-      <section class="toolbar" aria-label="筛选工具">
+      <section class="summary-grid" id="summary-grid" data-page-panel="radar" aria-label="市场摘要"></section>
+
+      <section class="toolbar" data-page-panel="radar" aria-label="筛选工具">
         <div class="segmented" role="tablist" aria-label="周期维度">
           <button class="segment active" data-horizon="short" type="button">短期</button>
           <button class="segment" data-horizon="mid" type="button">中期</button>
@@ -50,7 +55,7 @@
         </label>
       </section>
 
-      <section class="workspace">
+      <section class="workspace" data-page-panel="radar">
         <aside class="theme-list-panel" aria-label="美股主题ETF强弱榜">
           <div class="panel-heading">
             <div>
@@ -67,40 +72,75 @@
           <div class="theme-list" id="theme-list"></div>
         </aside>
 
-        <section class="detail-panel" aria-label="主题映射详情">
-          <div id="detail-view"></div>
-        </section>
+        <div class="detail-stack">
+          <section class="detail-panel" aria-label="主题映射详情">
+            <div id="detail-view"></div>
+          </section>
+
+          <section class="data-section" aria-label="A股ETF候选池">
+            <div class="panel-heading">
+              <div>
+                <h2>A股场内ETF候选池</h2>
+                <p>随当前主题联动筛选，显示映射分数、强弱与流动性</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>代码</th>
+                    <th>名称</th>
+                    <th><span class="help-label">映射 <button class="help-dot" type="button" title="映射分是A股ETF与当前美股主题的匹配度，综合主题标签、跟踪指数、成分方向、历史联动和流动性计算。分数越高，越适合作为对应观察标的。">?</button></span></th>
+                    <th>1日</th>
+                    <th>5日</th>
+                    <th>20日</th>
+                    <th>60日</th>
+                    <th>120日</th>
+                    <th>成交额</th>
+                    <th>状态</th>
+                  </tr>
+                </thead>
+                <tbody id="cn-etf-table"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
       </section>
 
-      <section class="data-section" aria-label="A股ETF候选池">
+      <section class="people-section hidden" data-page-panel="people" aria-label="人物跟踪">
         <div class="panel-heading">
           <div>
-            <h2>A股场内ETF候选池</h2>
-            <p>随当前主题联动筛选，显示映射分数、强弱与流动性</p>
+            <h2>人物跟踪</h2>
+            <p>跟踪关键人物公开动向与跨市场主题影响，后续可接入新闻、社媒和主题映射数据</p>
           </div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>代码</th>
-                <th>名称</th>
-                <th>映射</th>
-                <th>1日</th>
-                <th>5日</th>
-                <th>20日</th>
-                <th>60日</th>
-                <th>120日</th>
-                <th>成交额</th>
-                <th>状态</th>
-              </tr>
-            </thead>
-            <tbody id="cn-etf-table"></tbody>
-          </table>
+        <div class="people-grid">
+          <article class="person-card">
+            <span class="person-code">老特</span>
+            <h3>特朗普专区</h3>
+            <p>关注政策表态、关税、能源、军工、金融监管等主题对美股与A股ETF的影响。</p>
+            <div class="person-tags">
+              <span>政策</span>
+              <span>关税</span>
+              <span>能源</span>
+              <span>军工</span>
+            </div>
+          </article>
+          <article class="person-card">
+            <span class="person-code">老黄</span>
+            <h3>黄仁勋专区</h3>
+            <p>关注英伟达、AI算力、半导体、机器人等主题对中美相关ETF的传导。</p>
+            <div class="person-tags">
+              <span>AI算力</span>
+              <span>半导体</span>
+              <span>机器人</span>
+              <span>云计算</span>
+            </div>
+          </article>
         </div>
       </section>
     </main>
 
-    <script type="module" src="./src/app.js"></script>
+    <script type="module" src="./src/app.js?v=20260602b"></script>
   </body>
 </html>
