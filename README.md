@@ -80,11 +80,11 @@ python3 scripts/generate_snapshot.py
   },
   "cn": [
     {
-      "code": "159346",
-      "name": "存储芯片ETF",
-      "mappingScore": 96,
+      "code": "512480",
+      "name": "半导体ETF国联安",
+      "mappingScore": 88,
       "status": "传导",
-      "reasons": ["名称直接命中存储芯片"]
+      "reasons": ["A股暂无纯存储主题场内基金，使用半导体宽主题替代映射"]
     }
   ]
 }

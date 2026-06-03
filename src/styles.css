@@ -1133,6 +1133,11 @@ td {
   font-weight: 800;
 }
 
+.neutral {
+  color: var(--muted);
+  font-weight: 800;
+}
+
 .score-bars {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

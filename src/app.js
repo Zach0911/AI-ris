@@ -53,6 +53,11 @@ function fmtPct(value) {
   return `${sign}${value.toFixed(1)}%`;
 }
 
+function returnClass(value) {
+  if (value === null || value === undefined || Number.isNaN(value)) return "neutral";
+  return value >= 0 ? "up" : "down";
+}
+
 function fmtAmount(value) {
   if (!value) return "-";
   return `${value.toFixed(1)}亿`;
@@ -211,10 +216,10 @@ function renderThemeList(themes) {
             <b>${score}</b>
             <i class="mini-bar" style="--value:${score}%"></i>
           </span>
-          <span class="theme-return ${oneDayReturn >= 0 ? "up" : "down"}">
+          <span class="theme-return ${returnClass(oneDayReturn)}">
             ${fmtPct(oneDayReturn)}
           </span>
-          <span class="theme-return ${oneWeekReturn >= 0 ? "up" : "down"}">
+          <span class="theme-return ${returnClass(oneWeekReturn)}">
             ${fmtPct(oneWeekReturn)}
           </span>
           ${renderSignalPill(theme.signal)}
@@ -261,7 +266,7 @@ function renderMetricStrip(theme) {
           ([label, value]) => `
             <div class="metric-item">
               <span class="metric-period">${label}</span>
-              <strong class="${value >= 0 ? "up" : "down"}">${fmtPct(value)}</strong>
+              <strong class="${returnClass(value)}">${fmtPct(value)}</strong>
             </div>
           `,
         )
@@ -369,11 +374,11 @@ function renderCnTable(theme) {
           </td>
           <td><strong>${item.code}</strong></td>
           <td><span class="table-bar" style="--value:${item.mappingScore}%"><i></i><b>${item.mappingScore}</b></span></td>
-          <td class="${item.returns["1d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["1d"])}</td>
-          <td class="${item.returns["5d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["5d"])}</td>
-          <td class="${item.returns["20d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["20d"])}</td>
-          <td class="${item.returns["60d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["60d"])}</td>
-          <td class="${item.returns["120d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["120d"])}</td>
+          <td class="${returnClass(item.returns["1d"])}">${fmtPct(item.returns["1d"])}</td>
+          <td class="${returnClass(item.returns["5d"])}">${fmtPct(item.returns["5d"])}</td>
+          <td class="${returnClass(item.returns["20d"])}">${fmtPct(item.returns["20d"])}</td>
+          <td class="${returnClass(item.returns["60d"])}">${fmtPct(item.returns["60d"])}</td>
+          <td class="${returnClass(item.returns["120d"])}">${fmtPct(item.returns["120d"])}</td>
           <td>${fmtAmount(item.amount)}</td>
           <td>${renderSignalPill(item.status)}</td>
         </tr>

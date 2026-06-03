@@ -32,6 +32,9 @@ PERIODS = {
 SYNONYMS = {
     "DRAM": ["存储", "芯片", "半导体"],
     "NAND": ["存储", "芯片", "半导体"],
+    "SOXX": ["半导体", "芯片"],
+    "SMH": ["半导体", "芯片"],
+    "XSD": ["半导体", "芯片"],
     "AI": ["人工智能", "计算机", "算力"],
     "GPU": ["芯片", "算力", "人工智能"],
     "BOTZ": ["机器人", "自动化"],
@@ -104,6 +107,13 @@ def refresh_mapping_scores(snapshot: dict[str, Any]) -> None:
             index_hit = any(tag in etf.get("index", "").lower() for tag in tags)
             liquidity = min(10, float(etf.get("amount") or 0))
             score = 35 + len(hits) * 9 + (18 if direct_name_hit else 0) + (12 if index_hit else 0) + liquidity
+            reasons = " ".join(etf.get("reasons", []))
+            if "纯度低" in reasons:
+                score = min(score, 68)
+            elif "暂无纯" in reasons or "替代映射" in reasons or "宽主题替代" in reasons:
+                score = min(score, 88)
+            if "直接匹配" in reasons or "完全匹配" in reasons:
+                score = max(score, 90)
             etf["mappingScore"] = max(30, min(99, round(score)))
             if hits:
                 etf["matchedTags"] = sorted(set(hits))[:8]
