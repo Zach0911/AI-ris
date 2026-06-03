@@ -8,6 +8,10 @@ const state = {
   query: "",
   pageTab: "radar",
   selectedId: data.themes[0].id,
+  listCollapsed: false,
+  detailCollapsed: false,
+  sortKey: "strength",
+  sortDir: "desc",
 };
 
 const horizonLabels = {
@@ -30,7 +34,16 @@ const signalDescriptions = {
 };
 
 const strengthDescription =
-  "强度是按当前周期下美股主ETF的涨跌幅、趋势延续和相对排名综合计算的0-100分，分数越高代表该主题越强。";
+  "强度是当前美股主题ETF在所选周期内的0-100分。计算时会参考主ETF涨跌幅、趋势延续、主题内ETF共振情况和相对排名，分数越高代表该主题越强。";
+
+const selectedStrengthDescription =
+  "这里展示的是当前选中美股主题的强度，不是A股ETF强度。它会随短期、中期、长期、综合周期切换而变化，用来判断美股主题本身的强弱。";
+
+const sortLabels = {
+  strength: "强度",
+  "1d": "近1日涨跌幅",
+  "5d": "近1周涨跌幅",
+};
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -51,11 +64,17 @@ function renderSignalPill(signal) {
 }
 
 function renderHelp(label, description) {
-  return `<span class="help-label">${label} <button class="help-dot" type="button" title="${description}" aria-label="${label}说明">?</button></span>`;
+  return `<span class="help-label">${label} <button class="help-dot" type="button" data-help="${description}" title="${description}" aria-label="${label}说明">?</button></span>`;
 }
 
 function getThemeScore(theme) {
   return theme.us.strength[state.horizon] ?? theme.us.strength.all;
+}
+
+function getThemeSortValue(theme) {
+  if (state.sortKey === "1d") return theme.us.returns["1d"];
+  if (state.sortKey === "5d") return theme.us.returns["5d"];
+  return getThemeScore(theme);
 }
 
 function getFilteredThemes() {
@@ -74,7 +93,12 @@ function getFilteredThemes() {
         .toLowerCase();
       return signalOk && (!query || queryText.includes(query));
     })
-    .sort((a, b) => getThemeScore(b) - getThemeScore(a));
+    .sort((a, b) => {
+      const direction = state.sortDir === "asc" ? 1 : -1;
+      const diff = (getThemeSortValue(a) ?? 0) - (getThemeSortValue(b) ?? 0);
+      if (diff !== 0) return diff * direction;
+      return getThemeScore(b) - getThemeScore(a);
+    });
 }
 
 function getSelectedTheme(themes = data.themes) {
@@ -132,7 +156,27 @@ function renderSummary(themes) {
     )
     .join("");
 
-  $("#rank-caption").textContent = `按${horizonLabels[state.horizon]}排序 · ${themes.length} 个主题`;
+  const sortText =
+    state.sortKey === "strength"
+      ? horizonLabels[state.horizon]
+      : `${sortLabels[state.sortKey]}${state.sortDir === "desc" ? "从高到低" : "从低到高"}`;
+  $("#rank-caption").textContent = `按${sortText}排序 · ${themes.length} 个主题`;
+}
+
+function renderSortButton(key, label) {
+  const active = state.sortKey === key;
+  const dirText = state.sortDir === "desc" ? "降序" : "升序";
+  return `
+    <button
+      class="sort-head ${active ? "active" : ""}"
+      data-sort-key="${key}"
+      type="button"
+      aria-label="按${label}${active ? dirText : "排序"}"
+    >
+      <span>${label}</span>
+      <i aria-hidden="true">${active ? (state.sortDir === "desc" ? "↓" : "↑") : "↕"}</i>
+    </button>
+  `;
 }
 
 function renderThemeList(themes) {
@@ -141,11 +185,12 @@ function renderThemeList(themes) {
 
   $("#theme-list").innerHTML = `
     <div class="theme-list-head">
+      <span aria-hidden="true"></span>
       <span>主题</span>
       <span>主ETF</span>
       <span>${renderHelp("强度", strengthDescription)}</span>
-      <span>近1日</span>
-      <span>近1周</span>
+      <span>${renderSortButton("1d", "近1日")}</span>
+      <span>${renderSortButton("5d", "近1周")}</span>
       <span>信号</span>
     </div>
     ${themes
@@ -182,6 +227,19 @@ function renderThemeList(themes) {
   document.querySelectorAll(".theme-row").forEach((row) => {
     row.addEventListener("click", () => {
       state.selectedId = row.dataset.themeId;
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-sort-key]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const sortKey = button.dataset.sortKey;
+      if (state.sortKey === sortKey) {
+        state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
+      } else {
+        state.sortKey = sortKey;
+        state.sortDir = "desc";
+      }
       render();
     });
   });
@@ -274,13 +332,13 @@ function renderDetail(theme) {
         </div>
 
         <div class="reason-grid">
-          ${bestCn.reasons.map((reason) => `<div>${reason}</div>`).join("")}
+          ${bestCn.reasons.map((reason) => `<span>${reason}</span>`).join("")}
         </div>
       </div>
 
       <aside class="detail-side">
         <div class="score-ring" style="--score:${getThemeScore(theme)}">
-          <span>强度</span>
+          <span>${renderHelp("美股强度", selectedStrengthDescription)}</span>
           <strong>${getThemeScore(theme)}</strong>
           <em>${horizonLabels[state.horizon]}</em>
         </div>
@@ -305,11 +363,11 @@ function renderCnTable(theme) {
     .map(
       (item) => `
         <tr>
-          <td><strong>${item.code}</strong></td>
           <td>
             <span class="name-cell">${item.name}</span>
             <small>${item.index}</small>
           </td>
+          <td><strong>${item.code}</strong></td>
           <td><span class="table-bar" style="--value:${item.mappingScore}%"><i></i><b>${item.mappingScore}</b></span></td>
           <td class="${item.returns["1d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["1d"])}</td>
           <td class="${item.returns["5d"] >= 0 ? "up" : "down"}">${fmtPct(item.returns["5d"])}</td>
@@ -333,6 +391,27 @@ function renderPageTabs() {
   });
 }
 
+function renderWorkspaceState() {
+  const workspace = $(".workspace");
+  if (!workspace) return;
+  workspace.classList.toggle("list-collapsed", state.listCollapsed);
+  workspace.classList.toggle("detail-collapsed", state.detailCollapsed);
+
+  document.querySelectorAll("[data-collapse-panel='list']").forEach((button) => {
+    const label = state.listCollapsed ? "显示榜单" : "隐藏榜单";
+    button.setAttribute("aria-label", label);
+    button.setAttribute("title", label);
+    button.dataset.tooltip = label;
+  });
+
+  document.querySelectorAll("[data-collapse-panel='detail']").forEach((button) => {
+    const label = state.detailCollapsed ? "显示详情" : "隐藏详情";
+    button.setAttribute("aria-label", label);
+    button.setAttribute("title", label);
+    button.dataset.tooltip = label;
+  });
+}
+
 function renderEmpty() {
   $("#theme-list").innerHTML = `<div class="empty-state">没有匹配主题，换个关键词试试。</div>`;
   $("#detail-view").innerHTML = `<div class="empty-state">暂无可展示映射。</div>`;
@@ -344,6 +423,7 @@ function render() {
   $("#update-time").textContent = `更新 ${data.updatedAt.replace("T", " ").slice(0, 16)}`;
   renderSummary(themes);
   renderPageTabs();
+  renderWorkspaceState();
 
   if (!themes.length) {
     renderEmpty();
@@ -391,6 +471,8 @@ function bindEvents() {
     state.horizon = "short";
     state.signal = "all";
     state.query = "";
+    state.sortKey = "strength";
+    state.sortDir = "desc";
     state.selectedId = data.themes[0].id;
     $("#theme-search").value = "";
     document.querySelectorAll("[data-horizon]").forEach((item) => {
@@ -400,6 +482,47 @@ function bindEvents() {
       item.classList.toggle("active", item.dataset.signal === "all");
     });
     render();
+  });
+
+  document.querySelectorAll("[data-collapse-panel]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = button.dataset.collapsePanel;
+      if (target === "list") {
+        state.listCollapsed = !state.listCollapsed;
+        if (state.listCollapsed && state.detailCollapsed) state.detailCollapsed = false;
+      }
+      if (target === "detail") {
+        state.detailCollapsed = !state.detailCollapsed;
+        if (state.detailCollapsed && state.listCollapsed) state.listCollapsed = false;
+      }
+      renderWorkspaceState();
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    const helpButton = event.target.closest(".help-dot");
+    const existing = $(".help-popover");
+
+    if (helpButton) {
+      event.stopPropagation();
+      if (existing && existing.dataset.owner === helpButton.dataset.help) {
+        existing.remove();
+        return;
+      }
+      existing?.remove();
+      const popover = document.createElement("div");
+      const rect = helpButton.getBoundingClientRect();
+      popover.className = "help-popover";
+      popover.dataset.owner = helpButton.dataset.help;
+      popover.textContent = helpButton.dataset.help || helpButton.title || "暂无说明。";
+      document.body.appendChild(popover);
+      const left = Math.min(rect.left + window.scrollX, window.scrollX + window.innerWidth - popover.offsetWidth - 14);
+      popover.style.left = `${Math.max(14, left)}px`;
+      popover.style.top = `${rect.bottom + window.scrollY + 8}px`;
+      return;
+    }
+
+    existing?.remove();
   });
 }
 
