@@ -1,6 +1,7 @@
 import { marketData as sampleData } from "./data.js";
 
 let data = sampleData;
+let searchTrackTimer;
 
 const state = {
   horizon: "short",
@@ -46,6 +47,14 @@ const sortLabels = {
 };
 
 const $ = (selector) => document.querySelector(selector);
+
+function trackEvent(eventName, params = {}) {
+  if (typeof window.gtag !== "function") return;
+  window.gtag("event", eventName, {
+    app_name: "us_cn_etf_map",
+    ...params,
+  });
+}
 
 function fmtPct(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return "-";
@@ -232,6 +241,14 @@ function renderThemeList(themes) {
   document.querySelectorAll(".theme-row").forEach((row) => {
     row.addEventListener("click", () => {
       state.selectedId = row.dataset.themeId;
+      const theme = getSelectedTheme();
+      trackEvent("theme_select", {
+        theme_id: theme.id,
+        theme_name: theme.name,
+        us_primary: theme.us.primary,
+        signal: theme.signal,
+        horizon: state.horizon,
+      });
       render();
     });
   });
@@ -245,6 +262,11 @@ function renderThemeList(themes) {
         state.sortKey = sortKey;
         state.sortDir = "desc";
       }
+      trackEvent("sort_change", {
+        sort_key: state.sortKey,
+        sort_dir: state.sortDir,
+        horizon: state.horizon,
+      });
       render();
     });
   });
@@ -445,6 +467,9 @@ function bindEvents() {
   document.querySelectorAll("[data-page-tab]").forEach((button) => {
     button.addEventListener("click", () => {
       state.pageTab = button.dataset.pageTab;
+      trackEvent("page_tab_change", {
+        page_tab: state.pageTab,
+      });
       renderPageTabs();
     });
   });
@@ -454,6 +479,9 @@ function bindEvents() {
       document.querySelectorAll("[data-horizon]").forEach((item) => item.classList.remove("active"));
       button.classList.add("active");
       state.horizon = button.dataset.horizon;
+      trackEvent("horizon_change", {
+        horizon: state.horizon,
+      });
       render();
     });
   });
@@ -463,6 +491,9 @@ function bindEvents() {
       document.querySelectorAll("[data-signal]").forEach((item) => item.classList.remove("active"));
       button.classList.add("active");
       state.signal = button.dataset.signal;
+      trackEvent("signal_filter", {
+        signal: state.signal,
+      });
       render();
     });
   });
@@ -470,6 +501,15 @@ function bindEvents() {
   $("#theme-search").addEventListener("input", (event) => {
     state.query = event.target.value;
     render();
+    window.clearTimeout(searchTrackTimer);
+    const searchTerm = state.query.trim();
+    if (!searchTerm) return;
+    searchTrackTimer = window.setTimeout(() => {
+      trackEvent("search", {
+        search_term: searchTerm,
+        result_count: getFilteredThemes().length,
+      });
+    }, 700);
   });
 
   $("#reset-view").addEventListener("click", () => {
@@ -486,6 +526,10 @@ function bindEvents() {
     document.querySelectorAll("[data-signal]").forEach((item) => {
       item.classList.toggle("active", item.dataset.signal === "all");
     });
+    trackEvent("reset_view", {
+      horizon: state.horizon,
+      signal: state.signal,
+    });
     render();
   });
 
@@ -500,6 +544,11 @@ function bindEvents() {
         state.detailCollapsed = !state.detailCollapsed;
         if (state.detailCollapsed && state.listCollapsed) state.listCollapsed = false;
       }
+      trackEvent("panel_toggle", {
+        panel: target,
+        list_collapsed: state.listCollapsed,
+        detail_collapsed: state.detailCollapsed,
+      });
       renderWorkspaceState();
     });
   });

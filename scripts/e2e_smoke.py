@@ -21,6 +21,7 @@ REQUIRED_FILES = [
     "src/data.js",
     "data/latest.json",
 ]
+GA_MEASUREMENT_ID = "G-B4PWH30B3G"
 
 
 def run_snapshot() -> None:
@@ -89,10 +90,32 @@ def assert_static_server() -> None:
             proc.kill()
 
 
+def assert_ga_tracking_config() -> None:
+    index_html = (ROOT / "index.html").read_text(encoding="utf-8")
+    app_js = (ROOT / "src" / "app.js").read_text(encoding="utf-8")
+
+    assert f"https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}" in index_html
+    assert f'gtag("config", "{GA_MEASUREMENT_ID}")' in index_html
+    assert "function trackEvent" in app_js
+
+    for event_name in [
+        "theme_select",
+        "horizon_change",
+        "signal_filter",
+        "search",
+        "page_tab_change",
+        "sort_change",
+        "reset_view",
+        "panel_toggle",
+    ]:
+        assert event_name in app_js, f"missing GA event: {event_name}"
+
+
 def main() -> None:
     run_snapshot()
     assert_snapshot_schema()
     assert_static_server()
+    assert_ga_tracking_config()
     print("OK: end-to-end smoke test passed")
 
 
