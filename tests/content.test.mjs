@@ -4,6 +4,7 @@ import { test } from "node:test";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const appJs = await readFile(new URL("../src/app.js", import.meta.url), "utf8");
+const css = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
 
 test("uses the updated cross-market radar naming", () => {
   assert.match(html, /<title>AI-ris<\/title>/);
@@ -44,4 +45,16 @@ test("people radar binds person tabs, filters, sorting, and image fallback", () 
   assert.match(appJs, /data-person-filter/);
   assert.match(appJs, /data-person-sort/);
   assert.match(appJs, /handlePersonImageError/);
+});
+
+
+test("keeps the theme ranking table header visible while scrolling", () => {
+  assert.match(
+    css,
+    /\.theme-list-head\s*{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*z-index:\s*4;/s,
+  );
+});
+
+test("keeps the left ranking panel aligned with the detail panel", () => {
+  assert.doesNotMatch(css, /\.theme-list-panel\s*{[^}]*position:\s*sticky;/s);
 });

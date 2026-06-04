@@ -324,8 +324,7 @@ td small {
 }
 
 .toolbar {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 10;
   display: flex;
   align-items: center;
@@ -610,9 +609,9 @@ td small {
 }
 
 .theme-list-panel {
-  position: sticky;
+  position: relative;
   z-index: 3;
-  top: 84px;
+  top: auto;
   max-height: calc(100dvh - 104px);
   overflow: auto;
 }
@@ -687,6 +686,9 @@ td small {
 }
 
 .theme-list-head {
+  position: sticky;
+  top: 0;
+  z-index: 4;
   display: grid;
   grid-template-columns: 30px minmax(92px, 1fr) 54px 50px 56px 56px 46px;
   gap: 6px;
@@ -694,6 +696,7 @@ td small {
   padding: 9px 10px;
   border-left: 4px solid transparent;
   background: linear-gradient(90deg, #edf5ff, #f7fbff);
+  box-shadow: 0 1px 0 var(--line), 0 10px 18px rgba(22, 56, 98, 0.08);
   color: var(--ink);
   font-size: 14px;
   font-weight: 900;
@@ -1457,8 +1460,8 @@ td small,
 
 @media (min-width: 1181px) {
   .theme-list-panel {
-    position: sticky;
-    top: 84px;
+    position: relative;
+    top: auto;
     max-height: calc(100dvh - 104px);
     overflow: auto;
   }
