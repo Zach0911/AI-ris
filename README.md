@@ -8,8 +8,9 @@
 - A 股场内 ETF 映射：每个主题展示候选 ETF、映射分数、成交额、近期涨跌幅。
 - 主题传导状态：共振、传导、背离三类信号。
 - 映射解释：展示标签命中、主题纯度、流动性或替代关系。
+- 人物雷达：追踪特朗普、黄仁勋、马斯克公开发声后的上市公司市场信号。
 - 单页静态部署：用户无需注册，页面可直接部署到 GitHub Pages、Cloudflare Pages 或任意静态服务器。
-- 数据刷新入口：`scripts/generate_snapshot.py` 可在早晚任务中生成 `data/latest.json`。
+- 数据刷新入口：`scripts/generate_snapshot.py` 生成 `data/latest.json`，`scripts/generate_people_snapshot.py` 生成 `data/people-latest.json`。
 
 ## 本地预览
 
@@ -41,24 +42,35 @@ python3 scripts/e2e_smoke.py
 
 ```text
 data/latest.json
+data/people-latest.json
 ```
 
 刷新脚本：
 
 ```bash
 python3 scripts/generate_snapshot.py
+python3 scripts/generate_people_snapshot.py
 ```
 
 脚本会尽量使用免费数据：
 
 - 美股 ETF：优先 `yfinance`。
 - A 股 ETF：优先本地 `/Users/zhangchao/.claude/skills/finance-all-in-one` 的 `get_etf_kline`。
+- 人物雷达：事件事实来自人工核验的公开来源；涨跌幅优先通过 `finance-all-in-one` 获取美股日线，失败时降级到 Nasdaq 历史日线收盘价，并把实际行情源写入 `priceBasis.source`。
+- 人物照片：页面优先加载 `assets/people/*.webp` 本地静态图，外部真实照片链接只作为失败兜底，避免首屏受外链延时影响。
 - 任一数据源失败时保留现有快照结构，避免页面不可用。
 
 可用于早晚两次定时：
 
 - 北京时间 08:00：美股收盘后刷新美股强弱。
 - 北京时间 18:00：A 股收盘后刷新 A 股候选 ETF 与共振状态。
+
+人物雷达不是直接抓社交媒体后自动入库。上线后推荐分两层更新：
+
+- 事件池：新增人物发声先进入人工/半自动审核清单，必须满足「来源 URL 可访问、公司为可交易上市主体、事件日期明确」。
+- 行情层：已入库事件每天早晚自动重算 `returnSinceMention`、`firstDayReturn` 和 `priceBasis`，页面只读取生成后的静态 JSON。
+
+这样可以做到行情准实时刷新，同时避免把传闻、私有公司、OTC 无稳定行情的标的展示为可计算结果。
 
 ## 数据结构
 
