@@ -8,6 +8,8 @@
       name="description"
       content="追踪跨市主题，发现ETF线索。"
     />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230875de'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='28' font-family='Arial' font-weight='700' fill='white'%3EA%3C/text%3E%3C/svg%3E" />
+    <link rel="preload" as="image" href="./assets/people/trump.webp" type="image/webp" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-B4PWH30B3G"></script>
     <script>
@@ -17,7 +19,7 @@
 
       gtag('config', 'G-B4PWH30B3G');
     </script>
-    <link rel="stylesheet" href="./src/styles.css?v=20260603m" />
+  <link rel="stylesheet" href="./src/styles.css?v=20260605d" />
   </head>
   <body>
     <main class="app-shell">
@@ -34,7 +36,7 @@
 
       <nav class="page-tabs" aria-label="页面板块">
         <button class="page-tab active" data-page-tab="radar" type="button">跨市雷达</button>
-        <button class="page-tab" data-page-tab="people" type="button">人物跟踪</button>
+        <button class="page-tab" data-page-tab="people" type="button">人物雷达</button>
       </nav>
 
       <section class="summary-grid" id="summary-grid" data-page-panel="radar" aria-label="市场摘要"></section>
@@ -135,9 +137,9 @@
         </div>
       </section>
 
-      <section class="people-section hidden" data-page-panel="people" aria-label="人物跟踪"></section>
+      <section class="people-section hidden" data-page-panel="people" aria-label="人物雷达"></section>
     </main>
 
-    <script type="module" src="./src/app.js?v=20260603m"></script>
+  <script type="module" src="./src/app.js?v=20260605d"></script>
   </body>
 </html>
