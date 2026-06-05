@@ -1,7 +1,10 @@
 import { marketData as sampleData } from "./data.js";
+import { peopleData } from "./peopleData.js";
 
 let data = sampleData;
+let peopleSnapshot = peopleData;
 let searchTrackTimer;
+const trackedPersonImageLoads = new Set();
 
 const state = {
   horizon: "short",
@@ -13,6 +16,8 @@ const state = {
   detailCollapsed: false,
   sortKey: "strength",
   sortDir: "desc",
+  personId: peopleData.people[0].id,
+  personView: "voice",
 };
 
 const horizonLabels = {
@@ -46,13 +51,36 @@ const sortLabels = {
   "5d": "近1周涨跌幅",
 };
 
+const personViewLabels = {
+  voice: "发声影响",
+  disclosure: "披露交易",
+  policy: "政策关联",
+};
+
 const $ = (selector) => document.querySelector(selector);
+
+function applyInitialRoute() {
+  const checkParam = new URLSearchParams(window.location.search).get("check") || "";
+  if (checkParam.includes("person-radar")) {
+    state.pageTab = "people";
+  }
+}
 
 function trackEvent(eventName, params = {}) {
   if (typeof window.gtag !== "function") return;
   window.gtag("event", eventName, {
     app_name: "us_cn_etf_map",
     ...params,
+  });
+}
+
+function trackSectionView(reason = "render") {
+  trackEvent("section_view", {
+    section: state.pageTab,
+    reason,
+    theme_id: state.selectedId,
+    person_id: state.personId,
+    person_view: state.personView,
   });
 }
 
@@ -70,6 +98,16 @@ function returnClass(value) {
 function fmtAmount(value) {
   if (!value) return "-";
   return `${value.toFixed(1)}亿`;
+}
+
+function fmtPersonReturn(value) {
+  if (typeof value !== "number" || Number.isNaN(value)) return "-";
+  return fmtPct(value);
+}
+
+function personReturnClass(value) {
+  if (typeof value !== "number" || Number.isNaN(value)) return "neutral";
+  return returnClass(value);
 }
 
 function renderSignalPill(signal) {
@@ -153,12 +191,11 @@ function renderSummary(themes) {
       unit: "",
       note: `${strongest.us.primary} · ${getThemeScore(strongest)}分`,
       icon: "chip",
-      accent: true,
     },
   ]
     .map(
       (item) => `
-        <article class="summary-card ${item.accent ? "summary-card-accent" : ""}">
+        <article class="summary-card">
           <i class="summary-icon ${item.icon}" aria-hidden="true"></i>
           <div>
             <span>${item.label}</span>
@@ -409,6 +446,459 @@ function renderCnTable(theme) {
     .join("");
 }
 
+function getSelectedPerson() {
+  return peopleSnapshot.people.find((person) => person.id === state.personId) || peopleSnapshot.people[0];
+}
+
+function getPersonEvents(personId) {
+  return peopleSnapshot.events
+    .filter((event) => event.personId === personId)
+    .sort((a, b) => b.firstMentionedAt.localeCompare(a.firstMentionedAt));
+}
+
+function getPersonDisclosureSources(personId) {
+  return (peopleSnapshot.disclosureSources || []).filter((source) => source.personId === personId);
+}
+
+function getPersonPolicyLinks(personId) {
+  return (peopleSnapshot.policyLinks || []).filter((link) => link.personId === personId);
+}
+
+function renderPersonTabs() {
+  return `
+    <nav class="people-tabs" aria-label="人物二级菜单">
+      ${peopleSnapshot.people
+        .map(
+          (person) => `
+            <button
+              class="people-tab ${person.id === state.personId ? "active" : ""}"
+              data-person-id="${person.id}"
+              type="button"
+            >
+              <span>
+                <strong>${person.name}</strong>
+              </span>
+            </button>
+          `,
+        )
+        .join("")}
+    </nav>
+  `;
+}
+
+function renderPersonHero(person) {
+  const events = getPersonEvents(person.id);
+  const directCount = events.filter((event) => event.eventType === "直接点名").length;
+  const highConfidenceCount = events.filter((event) => event.confidence === "高").length;
+  const numericReturns = events
+    .map((event) => event.returnSinceMention)
+    .filter((value) => typeof value === "number");
+  const bestReturn = numericReturns.length ? Math.max(...numericReturns) : null;
+  const latestEvent = [...events].sort((a, b) => b.firstMentionedAt.localeCompare(a.firstMentionedAt))[0];
+  const fallbackSrc = person.image.fallbackSrc || "";
+  return `
+    <section class="person-hero">
+      <figure class="person-photo-card image-loading">
+        <img
+          data-person-image
+          data-person-image-id="${person.id}"
+          data-person-fallback-src="${fallbackSrc}"
+          src="${person.image.src}"
+          alt="${person.image.alt}"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+        />
+        <figcaption>
+          <span>${person.englishName}</span>
+          <strong>${person.name}</strong>
+          <small>${person.image.credit}</small>
+        </figcaption>
+        <div class="person-photo-fallback" aria-hidden="true">
+          <span>${person.name}</span>
+          <small>真实图片加载失败</small>
+        </div>
+      </figure>
+      <div class="person-hero-main">
+        <h2>${person.title}</h2>
+        <p>${person.subtitle}</p>
+        <div class="person-metrics" aria-label="${person.name}摘要指标">
+          <article>
+            <span>记录事件</span>
+            <strong>${events.length}</strong>
+          </article>
+          <article>
+            <span>直接点名公司</span>
+            <strong>${directCount}</strong>
+          </article>
+          <article>
+            <span>最高喊单以来</span>
+            <strong class="${bestReturn === null ? "neutral" : returnClass(bestReturn)}">
+              ${bestReturn === null ? "观察中" : fmtPct(bestReturn)}
+            </strong>
+          </article>
+          <article>
+            <span>高可信来源</span>
+            <strong>${highConfidenceCount}</strong>
+          </article>
+          <article>
+            <span>最近事件</span>
+            <strong>${latestEvent?.firstMentionedAt || "-"}</strong>
+          </article>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderPersonViewTabs(person) {
+  const counts = {
+    voice: getPersonEvents(person.id).length,
+    disclosure: getPersonDisclosureSources(person.id).length,
+    policy: getPersonPolicyLinks(person.id).length,
+  };
+  return `
+    <nav class="person-view-tabs" aria-label="${person.name}数据视图">
+      ${Object.entries(personViewLabels)
+        .map(
+          ([key, label]) => `
+            <button
+              class="person-view-tab ${state.personView === key ? "active" : ""}"
+              data-person-view="${key}"
+              type="button"
+            >
+              <span>${label}</span>
+              <b>${counts[key]}</b>
+            </button>
+          `,
+        )
+        .join("")}
+    </nav>
+  `;
+}
+
+function renderEvidenceChain() {
+  const steps = [
+    ["1", "人物动作", "发声 / 披露 / 政策"],
+    ["2", "证据来源", "新闻 / OGE / 官方文件"],
+    ["3", "上市主体", "ticker 与公司核验"],
+    ["4", "行情计算", "日线收盘价回测"],
+  ];
+  return `
+    <section class="evidence-chain" aria-label="证据链">
+      ${steps
+        .map(
+          ([index, title, detail]) => `
+            <article>
+              <b>${index}</b>
+              <span>${title}</span>
+              <small>${detail}</small>
+            </article>
+          `,
+        )
+        .join("")}
+    </section>
+  `;
+}
+
+function renderPersonLedger(person) {
+  const events = getPersonEvents(person.id);
+  if (!events.length) {
+    return `
+      <section class="person-ledger">
+        <div class="panel-heading">
+          <div>
+            <h2>${person.name}概念</h2>
+            <p>暂无已核验事件。</p>
+          </div>
+        </div>
+        <div class="empty-state">暂无已核验事件。</div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="person-ledger" aria-label="${person.name}喊单公司列表">
+      <div class="panel-heading">
+        <div>
+          <h2>${person.name}概念</h2>
+          <p>点击会议/场景或信息来源回看原始证据</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="person-table">
+          <colgroup>
+            <col class="person-col-company" />
+            <col class="person-col-ticker" />
+            <col class="person-col-date" />
+            <col class="person-col-since" />
+            <col class="person-col-first-day" />
+            <col class="person-col-location" />
+            <col class="person-col-event" />
+            <col class="person-col-type" />
+            <col class="person-col-source" />
+            <col class="person-col-confidence" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>喊单公司</th>
+              <th>股票代码</th>
+              <th>首次喊单时间</th>
+              <th>喊单以来涨跌幅</th>
+              <th>首日涨跌幅</th>
+              <th>地点</th>
+              <th>会议/场景</th>
+              <th>事件类型</th>
+              <th>信息来源</th>
+              <th>可信度</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${events
+              .map(
+                (event) => `
+                  <tr>
+                    <td>
+                      <span class="name-cell">${event.company}</span>
+                    </td>
+                    <td><strong>${event.ticker}</strong></td>
+                    <td>${event.firstMentionedAt}</td>
+                    <td
+                      class="${personReturnClass(event.returnSinceMention)}"
+                      title="${event.priceBasis ? `起算 ${event.priceBasis.basisDate} 收盘 ${event.priceBasis.basisClose}，最新 ${event.priceBasis.latestDate} 收盘 ${event.priceBasis.latestClose}` : ""}"
+                    >
+                      ${fmtPersonReturn(event.returnSinceMention)}
+                    </td>
+                    <td
+                      class="${personReturnClass(event.firstDayReturn)}"
+                      title="${event.priceBasis ? `前收 ${event.priceBasis.previousDate} ${event.priceBasis.previousClose}，起算日 ${event.priceBasis.basisDate} ${event.priceBasis.basisClose}` : ""}"
+                    >
+                      ${fmtPersonReturn(event.firstDayReturn)}
+                    </td>
+                    <td>${event.location}</td>
+                    <td>
+                      <a class="event-link" href="${event.sourceUrl}" target="_blank" rel="noreferrer">
+                        ${event.event}
+                      </a>
+                    </td>
+                    <td><span class="event-type">${event.eventType}</span></td>
+                    <td>
+                      <a class="source-link" href="${event.sourceUrl}" target="_blank" rel="noreferrer">
+                        ${event.sourceName}
+                      </a>
+                    </td>
+                    <td><span class="confidence-label ${event.confidence === "高" ? "high" : event.confidence === "中" ? "mid" : "low"}">${event.confidence}</span></td>
+                  </tr>
+                `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+function renderDisclosureView(person) {
+  const sources = getPersonDisclosureSources(person.id);
+  if (!sources.length) {
+    return `
+      <section class="person-ledger">
+        <div class="panel-heading">
+          <div>
+            <h2>${person.name}披露交易</h2>
+            <p>当前人物暂无可接入的 OGE/政府披露交易源，先保留发声影响和政策关联。</p>
+          </div>
+        </div>
+        <div class="empty-state">暂无披露交易源。</div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="person-ledger disclosure-panel" aria-label="${person.name}披露交易源">
+      <div class="panel-heading">
+        <div>
+          <h2>${person.name}披露交易</h2>
+          <p>先接入权威披露源和聚合站，交易明细通过审核后再进入正式表格。</p>
+        </div>
+      </div>
+      <div class="disclosure-grid">
+        ${sources
+          .map(
+            (source) => `
+              <article class="disclosure-card">
+                <div>
+                  <span class="source-status">${source.status}</span>
+                  <h3>${source.name}</h3>
+                  <p>${source.scope}</p>
+                </div>
+                <strong>${source.coverage}</strong>
+                <small>${source.cadence}</small>
+                <div class="field-list">
+                  ${source.fields.map((field) => `<span>${field}</span>`).join("")}
+                </div>
+                <a class="source-link" href="${source.url}" target="_blank" rel="noreferrer">查看来源</a>
+              </article>
+            `,
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderPolicyView(person) {
+  const links = getPersonPolicyLinks(person.id);
+  if (!links.length) {
+    return `
+      <section class="person-ledger">
+        <div class="panel-heading">
+          <div>
+            <h2>${person.name}政策关联</h2>
+            <p>暂无已核验政策关联。</p>
+          </div>
+        </div>
+        <div class="empty-state">暂无政策关联。</div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="person-ledger policy-panel" aria-label="${person.name}政策关联">
+      <div class="panel-heading">
+        <div>
+          <h2>${person.name}政策关联</h2>
+          <p>把发声、披露和政策主题合并观察，定位可能反复出现的公司线索。</p>
+        </div>
+      </div>
+      <div class="policy-grid">
+        ${links
+          .map(
+            (link) => `
+              <article class="policy-card">
+                <div>
+                  <span>${link.status}</span>
+                  <h3>${link.theme}</h3>
+                </div>
+                <p>${link.evidence}</p>
+                <strong>${link.relation}</strong>
+                <div class="ticker-list">
+                  ${link.tickers.map((ticker) => `<b>${ticker}</b>`).join("")}
+                </div>
+              </article>
+            `,
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderPersonActiveView(person) {
+  if (state.personView === "disclosure") return renderDisclosureView(person);
+  if (state.personView === "policy") return renderPolicyView(person);
+  return renderPersonLedger(person);
+}
+
+function handlePersonImageError(event) {
+  const image = event.target;
+  const fallbackSrc = image.dataset.personFallbackSrc;
+  if (fallbackSrc && image.dataset.fallbackTried !== "true") {
+    image.dataset.fallbackTried = "true";
+    trackEvent("person_image_fallback", {
+      person_id: image.dataset.personImageId || state.personId,
+      image_src: image.getAttribute("src"),
+      fallback_src: fallbackSrc,
+    });
+    image.src = fallbackSrc;
+    return;
+  }
+  const card = event.target.closest(".person-photo-card");
+  if (!card) return;
+  card.classList.remove("image-loading", "image-ready");
+  card.classList.add("image-failed");
+  trackEvent("person_image_failed", {
+    person_id: image.dataset.personImageId || state.personId,
+    image_src: image.currentSrc || image.src,
+  });
+}
+
+function handlePersonImageLoad(event) {
+  const card = event.target.closest(".person-photo-card");
+  if (!card) return;
+  card.classList.remove("image-loading", "image-failed");
+  card.classList.add("image-ready");
+  const personId = event.target.dataset.personImageId || state.personId;
+  const imageSrc = event.target.currentSrc || event.target.src;
+  const analyticsKey = `${personId}:${imageSrc}`;
+  if (trackedPersonImageLoads.has(analyticsKey)) return;
+  trackedPersonImageLoads.add(analyticsKey);
+  trackEvent("person_image_loaded", {
+    person_id: personId,
+    image_src: imageSrc,
+    fallback_used: event.target.dataset.fallbackTried === "true",
+  });
+}
+
+function renderPeopleSection() {
+  const section = $(".people-section");
+  if (!section) return;
+  const person = getSelectedPerson();
+  section.innerHTML = `
+    <div class="people-intro">
+      <h2>从影响力人物发声中发现市场信号</h2>
+      <p>从人物进入，查看他的公开发声、披露交易、政策关联、信息来源与市场表现。</p>
+    </div>
+    ${renderPersonTabs()}
+    ${renderPersonHero(person)}
+    ${renderEvidenceChain()}
+    ${renderPersonViewTabs(person)}
+    ${renderPersonActiveView(person)}
+    <p class="people-disclaimer">
+      本页面仅记录公开信息与市场反应，不构成投资建议。发声影响按日线收盘价计算；披露交易源进入审核后再入正式明细。
+    </p>
+  `;
+  bindPeopleEvents();
+}
+
+function bindPeopleEvents() {
+  document.querySelectorAll("[data-person-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.personId = button.dataset.personId;
+      trackEvent("person_tab_change", {
+        person_id: state.personId,
+      });
+      trackSectionView("person_tab_change");
+      renderPeopleSection();
+    });
+  });
+
+  document.querySelectorAll("[data-person-view]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.personView = button.dataset.personView;
+      trackEvent("person_view_change", {
+        person_id: state.personId,
+        person_view: state.personView,
+      });
+      trackSectionView("person_view_change");
+      renderPeopleSection();
+    });
+  });
+
+  document.querySelectorAll("[data-person-image]").forEach((image) => {
+    if (image.complete && !image.naturalWidth) {
+      handlePersonImageError({ target: image });
+      return;
+    }
+    if (image.complete && image.naturalWidth) {
+      handlePersonImageLoad({ target: image });
+    }
+    image.addEventListener("error", handlePersonImageError);
+    image.addEventListener("load", handlePersonImageLoad);
+  });
+}
+
 function renderPageTabs() {
   document.querySelectorAll("[data-page-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.pageTab === state.pageTab);
@@ -449,6 +939,7 @@ function render() {
   const themes = getFilteredThemes();
   $("#update-time").textContent = `更新 ${data.updatedAt.replace("T", " ").slice(0, 16)}`;
   renderSummary(themes);
+  renderPeopleSection();
   renderPageTabs();
   renderWorkspaceState();
 
@@ -471,6 +962,7 @@ function bindEvents() {
         page_tab: state.pageTab,
       });
       renderPageTabs();
+      trackSectionView("page_tab_change");
     });
   });
 
@@ -554,6 +1046,20 @@ function bindEvents() {
   });
 
   document.addEventListener("click", (event) => {
+    const sourceAnchor = event.target.closest("a.event-link, a.source-link");
+    if (sourceAnchor) {
+      const person = getSelectedPerson();
+      trackEvent("source_click", {
+        section: state.pageTab,
+        person_id: person?.id || "",
+        person_name: person?.name || "",
+        person_view: state.personView,
+        link_type: sourceAnchor.classList.contains("event-link") ? "event" : "source",
+        link_text: sourceAnchor.textContent.trim(),
+        link_url: sourceAnchor.href,
+      });
+    }
+
     const helpButton = event.target.closest(".help-dot");
     const existing = $(".help-popover");
 
@@ -594,6 +1100,44 @@ async function loadLatestData() {
   }
 }
 
+function isValidPeopleSnapshot(snapshot) {
+  if (!snapshot?.people?.length || !snapshot?.events?.length) return false;
+  const peopleIds = new Set(snapshot.people.map((person) => person.id));
+  return snapshot.events.every((event) => {
+    return (
+      peopleIds.has(event.personId) &&
+      event.company &&
+      event.ticker &&
+      /^https?:\/\//.test(event.sourceUrl || "") &&
+      typeof event.returnSinceMention === "number" &&
+      typeof event.firstDayReturn === "number" &&
+      event.priceBasis?.basisDate &&
+      typeof event.priceBasis.basisClose === "number" &&
+      event.priceBasis.latestDate &&
+      typeof event.priceBasis.latestClose === "number"
+    );
+  });
+}
+
+async function loadLatestPeopleData() {
+  try {
+    const response = await fetch("./data/people-latest.json", { cache: "no-store" });
+    if (!response.ok) return;
+    const latest = await response.json();
+    if (isValidPeopleSnapshot(latest)) {
+      peopleSnapshot = latest;
+      if (!peopleSnapshot.people.some((person) => person.id === state.personId)) {
+        state.personId = peopleSnapshot.people[0].id;
+      }
+    }
+  } catch {
+    peopleSnapshot = peopleData;
+  }
+}
+
 bindEvents();
+applyInitialRoute();
 await loadLatestData();
+await loadLatestPeopleData();
 render();
+trackSectionView("initial_load");
