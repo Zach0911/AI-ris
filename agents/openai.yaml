@@ -1,4 +1,4 @@
 interface:
-  display_name: "US-CN ETF Map"
-  short_description: "Build and maintain a US-to-China ETF mapping dashboard"
-  default_prompt: "Use $us-cn-etf-map to refresh, validate, or extend the US-to-China ETF mapping dashboard."
+  display_name: "AI-ris"
+  short_description: "Build and maintain the AI-ris market radar dashboard"
+  default_prompt: "Use $AI-ris to refresh, validate, or extend the AI-ris market radar dashboard."

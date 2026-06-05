@@ -1,13 +1,13 @@
 ---
-name: us-cn-etf-map
-description: Build, refresh, validate, and extend the US-to-China ETF mapping dashboard. Use when Codex needs to work on a static investment dashboard that ranks US thematic ETFs, maps them to A-share listed ETF candidates, refreshes data/latest.json, adjusts the theme mapping schema, explains resonance/lead/divergence signals, or prepares the project for static deployment on GitHub Pages or similar hosts.
+name: AI-ris
+description: Build, refresh, validate, and extend the AI-ris market radar dashboard. Use when Codex needs to work on a static investment dashboard that ranks US thematic ETFs, maps them to A-share listed ETF candidates, tracks influence-person market signals, refreshes data snapshots, adjusts the theme mapping schema, explains resonance/lead/divergence signals, or prepares the project for static deployment on GitHub Pages or similar hosts.
 ---
 
-# US-CN ETF Map
+# AI-ris
 
 ## Overview
 
-Use this skill to maintain the one-page dashboard that maps US thematic ETF strength into A-share listed ETF candidates. The project is a static HTML/CSS/JavaScript app with a tolerant Python snapshot generator.
+Use this skill to maintain the AI-ris dashboard that maps US thematic ETF strength into A-share listed ETF candidates and tracks influence-person market signals. The project is a static HTML/CSS/JavaScript app with tolerant Python snapshot generators.
 
 ## Project Layout
 
