@@ -12,8 +12,8 @@ on:
       - "data/latest.json"
       - "data/people-latest.json"
   schedule:
-    - cron: "0 0 * * 1-5"
-    - cron: "0 10 * * 1-5"
+    - cron: "0 0 * * 1-6"
+    - cron: "0 10 * * 1-6"
   workflow_dispatch:
 
 permissions:
