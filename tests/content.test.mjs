@@ -115,3 +115,18 @@ test("keeps the theme ranking table header visible while scrolling", () => {
 test("keeps the left ranking panel aligned with the detail panel", () => {
   assert.doesNotMatch(css, /\.theme-list-panel\s*{[^}]*position:\s*sticky;/s);
 });
+
+test("exposes a FAQ entry for metric calculation methods", () => {
+  assert.doesNotMatch(html, /class="page-tab" data-page-tab="faq"/);
+  assert.match(html, /class="faq-link" data-page-tab="faq" type="button">指标口径<\/button>/);
+  assert.match(html, /class="faq-section hidden" data-page-panel="faq"/);
+  assert.match(appJs, /renderFaqSection/);
+  assert.match(appJs, /指标如何计算/);
+  assert.match(appJs, /美股强度/);
+  assert.match(appJs, /映射分/);
+  assert.match(appJs, /共振、传导、背离/);
+  assert.match(appJs, /喊单以来涨跌幅/);
+  assert.match(css, /\.faq-section/);
+  assert.match(css, /\.faq-link/);
+  assert.match(css, /\.faq-grid/);
+});

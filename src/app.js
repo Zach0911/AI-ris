@@ -57,6 +57,63 @@ const personViewLabels = {
   policy: "政策关联",
 };
 
+const faqItems = [
+  {
+    title: "美股强度",
+    summary: "衡量当前美股主题 ETF 在所选周期内的趋势强弱，范围为 0-100 分。",
+    details: [
+      "短期参考最新收盘价相对 EMA5 与 EMA20 的位置。",
+      "中期参考 EMA20 与 EMA60，长期参考 EMA120 与年内趋势。",
+      "综合强度会把短期、中期、长期分数加权合成，用于默认排序和主题对比。",
+    ],
+  },
+  {
+    title: "映射分",
+    summary: "衡量 A 股 ETF 与当前美股主题的匹配程度，范围为 0-100 分。",
+    details: [
+      "优先参考主题标签、跟踪指数、行业方向和替代关系。",
+      "再结合历史联动、流动性和可交易性做修正。",
+      "分数越高，越适合作为该美股主题在 A 股场内的观察标的。",
+    ],
+  },
+  {
+    title: "共振、传导、背离",
+    summary: "描述美股主题与 A 股 ETF 在方向和节奏上的关系。",
+    details: [
+      "共振表示两边多个周期同向走强或走弱。",
+      "传导表示美股主题先动，A 股 ETF 尚未完全跟随。",
+      "背离表示两边不同步或方向相反，需要结合本土因素二次确认。",
+    ],
+  },
+  {
+    title: "涨跌幅",
+    summary: "展示 1 日、5 日、20 日、60 日、120 日和年初至今等区间表现。",
+    details: [
+      "美股主题使用主 ETF 的常规交易时段日线收盘价。",
+      "A 股 ETF 使用场内 ETF 日线收盘价。",
+      "历史不足或暂不可计算的区间显示为短横线。",
+    ],
+  },
+  {
+    title: "成交额",
+    summary: "用于判断 A 股 ETF 的流动性和观察价值。",
+    details: [
+      "单位为亿元，来自公开行情快照。",
+      "成交额越高，通常代表进出成本和价格冲击更可控。",
+      "它不直接决定映射关系，但会影响候选标的优先级。",
+    ],
+  },
+  {
+    title: "人物雷达指标",
+    summary: "记录影响力人物公开发声、披露交易和政策关联后的市场反应。",
+    details: [
+      "喊单以来涨跌幅按事件起算日收盘价到最新收盘价计算。",
+      "首日涨跌幅按事件起算日相对前一交易日收盘价计算。",
+      "可信度依据来源权威性、是否直接点名和证据链完整度分为高、中、低。",
+    ],
+  },
+];
+
 const $ = (selector) => document.querySelector(selector);
 
 function applyInitialRoute() {
@@ -862,6 +919,33 @@ function renderPeopleSection() {
   bindPeopleEvents();
 }
 
+function renderFaqSection() {
+  const section = $(".faq-section");
+  if (!section) return;
+  section.innerHTML = `
+    <div class="faq-intro">
+      <span class="eyebrow">指标如何计算</span>
+      <h2>常见问题</h2>
+      <p>这里记录 AI-ris 当前指标口径。所有分数都是观察工具，不构成投资建议。</p>
+    </div>
+    <div class="faq-grid">
+      ${faqItems
+        .map(
+          (item) => `
+            <article class="faq-card">
+              <h3>${item.title}</h3>
+              <p>${item.summary}</p>
+              <ul>
+                ${item.details.map((detail) => `<li>${detail}</li>`).join("")}
+              </ul>
+            </article>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
 function bindPeopleEvents() {
   document.querySelectorAll("[data-person-id]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -940,6 +1024,7 @@ function render() {
   $("#update-time").textContent = `更新 ${data.updatedAt.replace("T", " ").slice(0, 16)}`;
   renderSummary(themes);
   renderPeopleSection();
+  renderFaqSection();
   renderPageTabs();
   renderWorkspaceState();
 
