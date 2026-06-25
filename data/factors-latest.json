@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-25T20:14:33+08:00",
+  "updatedAt": "2026-06-25T22:34:15+08:00",
   "date": "2026-06-25",
   "headline": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
   "verdict": {
@@ -30,7 +30,134 @@
       ],
       "light": "strong",
       "hint": "分母端 · 定估值贴现率。快速上行杀估值，回落解压成长股",
-      "source": "FRED DGS10"
+      "source": "FRED DGS10",
+      "explain": {
+        "definition": "美国 10 年期国债收益率，市场无风险利率基准，定估值贴现率（分母端）。",
+        "current": "当前 4.5%，近 20 日下行 -0.06pp。",
+        "threshold": "52周区间 3.94–4.69%，预警线 4.7%（破位+EPS 未对冲即触发估值压缩预警）。"
+      },
+      "history": [
+        {
+          "date": "2026-05-11",
+          "value": 4.42
+        },
+        {
+          "date": "2026-05-12",
+          "value": 4.46
+        },
+        {
+          "date": "2026-05-13",
+          "value": 4.46
+        },
+        {
+          "date": "2026-05-14",
+          "value": 4.47
+        },
+        {
+          "date": "2026-05-15",
+          "value": 4.59
+        },
+        {
+          "date": "2026-05-18",
+          "value": 4.61
+        },
+        {
+          "date": "2026-05-19",
+          "value": 4.67
+        },
+        {
+          "date": "2026-05-20",
+          "value": 4.57
+        },
+        {
+          "date": "2026-05-21",
+          "value": 4.57
+        },
+        {
+          "date": "2026-05-22",
+          "value": 4.56
+        },
+        {
+          "date": "2026-05-26",
+          "value": 4.5
+        },
+        {
+          "date": "2026-05-27",
+          "value": 4.48
+        },
+        {
+          "date": "2026-05-28",
+          "value": 4.45
+        },
+        {
+          "date": "2026-05-29",
+          "value": 4.45
+        },
+        {
+          "date": "2026-06-01",
+          "value": 4.47
+        },
+        {
+          "date": "2026-06-02",
+          "value": 4.46
+        },
+        {
+          "date": "2026-06-03",
+          "value": 4.49
+        },
+        {
+          "date": "2026-06-04",
+          "value": 4.47
+        },
+        {
+          "date": "2026-06-05",
+          "value": 4.55
+        },
+        {
+          "date": "2026-06-08",
+          "value": 4.56
+        },
+        {
+          "date": "2026-06-09",
+          "value": 4.53
+        },
+        {
+          "date": "2026-06-10",
+          "value": 4.55
+        },
+        {
+          "date": "2026-06-11",
+          "value": 4.45
+        },
+        {
+          "date": "2026-06-12",
+          "value": 4.48
+        },
+        {
+          "date": "2026-06-15",
+          "value": 4.47
+        },
+        {
+          "date": "2026-06-16",
+          "value": 4.43
+        },
+        {
+          "date": "2026-06-17",
+          "value": 4.49
+        },
+        {
+          "date": "2026-06-18",
+          "value": 4.46
+        },
+        {
+          "date": "2026-06-22",
+          "value": 4.51
+        },
+        {
+          "date": "2026-06-23",
+          "value": 4.5
+        }
+      ]
     },
     "nvda": {
       "label": "NVDA",
@@ -51,7 +178,38 @@
       ],
       "light": "strong",
       "hint": "AI 景气 + 指数集中度。连续 2 季 QoQ 减速是顶部领先信号",
-      "source": "SEC EDGAR 10-Q"
+      "source": "SEC EDGAR 10-Q",
+      "explain": {
+        "definition": "英伟达数据中心业务收入同比/环比增速，AI 景气与指数集中度的代理指标。",
+        "current": "当前 YoY +92%、QoQ +21%（2026-04-26（FY27Q1））。",
+        "threshold": "QoQ ≥5%=加速，0–5%=高位持平，≤0=减速；连续 2 季 QoQ 转负为顶部领先信号。"
+      },
+      "history": [
+        {
+          "date": "2026-04-26",
+          "value": 92
+        },
+        {
+          "date": "2025-10-26",
+          "value": -61
+        },
+        {
+          "date": "2025-07-27",
+          "value": -49
+        },
+        {
+          "date": "2024-10-27",
+          "value": -61
+        },
+        {
+          "date": "2024-07-28",
+          "value": -46
+        },
+        {
+          "date": "2023-10-29",
+          "value": -50
+        }
+      ]
     },
     "eps": {
       "label": "SPX",
@@ -72,7 +230,110 @@
       ],
       "light": "strong",
       "hint": "分子端 · 已实现盈利（TTM）。同步/滞后指标，同比转弱说明盈利开始减速",
-      "source": "multpl"
+      "source": "multpl",
+      "explain": {
+        "definition": "标普 500 滚动 12 个月每股盈利（TTM）同比，分子端 · 已实现盈利。",
+        "current": "当前 TTM EPS $241.50，同比 +11.7%（对比 2024-10）。",
+        "threshold": "同比 >2%=扩张，<-2%=转弱；TTM 为同步/滞后指标，信号比 forward 晚 1–2 季。"
+      },
+      "history": [
+        {
+          "date": "2025-09-30",
+          "value": 241.5
+        },
+        {
+          "date": "2025-08-31",
+          "value": 238.14
+        },
+        {
+          "date": "2025-07-31",
+          "value": 234.83
+        },
+        {
+          "date": "2025-06-30",
+          "value": 231.2
+        },
+        {
+          "date": "2025-05-31",
+          "value": 229.96
+        },
+        {
+          "date": "2025-04-30",
+          "value": 228.4
+        },
+        {
+          "date": "2025-03-31",
+          "value": 227.07
+        },
+        {
+          "date": "2025-02-28",
+          "value": 225.3
+        },
+        {
+          "date": "2025-01-31",
+          "value": 224.01
+        },
+        {
+          "date": "2024-12-31",
+          "value": 223.17
+        },
+        {
+          "date": "2024-11-30",
+          "value": 219.74
+        },
+        {
+          "date": "2024-10-31",
+          "value": 216.12
+        },
+        {
+          "date": "2024-09-30",
+          "value": 212.86
+        },
+        {
+          "date": "2024-08-31",
+          "value": 211.66
+        },
+        {
+          "date": "2024-07-31",
+          "value": 210.29
+        },
+        {
+          "date": "2024-06-30",
+          "value": 208.99
+        },
+        {
+          "date": "2024-05-31",
+          "value": 207.45
+        },
+        {
+          "date": "2024-04-30",
+          "value": 206.18
+        },
+        {
+          "date": "2024-03-31",
+          "value": 205.36
+        },
+        {
+          "date": "2024-02-29",
+          "value": 207.06
+        },
+        {
+          "date": "2024-01-31",
+          "value": 208.72
+        },
+        {
+          "date": "2023-12-31",
+          "value": 210.23
+        },
+        {
+          "date": "2023-11-30",
+          "value": 207.05
+        },
+        {
+          "date": "2023-10-31",
+          "value": 203.66
+        }
+      ]
     }
   },
   "alerts": [
@@ -96,54 +357,79 @@
       "tnx": "下行",
       "eps": "扩张",
       "nvda": "加速",
+      "tnxSentiment": "up",
+      "epsSentiment": "up",
+      "nvdaSentiment": "up",
       "state": "主升牛市",
       "tone": "bull",
       "action": "维持 / 顺势仓位",
-      "active": true
+      "desc": "三因子同向偏多，主升延续",
+      "active": true,
+      "reason": "为什么是【主升牛市】：下行（解压估值） + 扩张（盈利增长） + 加速（AI 景气上行） → 三因子同向偏多，主升逻辑延续"
     },
     {
       "tnx": "下行",
       "eps": "扩张",
       "nvda": "减速",
+      "tnxSentiment": "up",
+      "epsSentiment": "up",
+      "nvdaSentiment": "down",
       "state": "扩散牛市",
       "tone": "bull",
       "action": "轮动 / 加仓非 AI",
+      "desc": "估值盈利偏多、AI 减速，行情扩散",
       "active": false
     },
     {
       "tnx": "上行",
       "eps": "扩张",
       "nvda": "加速",
+      "tnxSentiment": "down",
+      "epsSentiment": "up",
+      "nvdaSentiment": "up",
       "state": "震荡偏强",
       "tone": "chop",
       "action": "持仓观望",
+      "desc": "盈利强但估值承压，结构机会",
       "active": false
     },
     {
       "tnx": "上行",
       "eps": "转弱",
       "nvda": "减速",
+      "tnxSentiment": "down",
+      "epsSentiment": "down",
+      "nvdaSentiment": "down",
       "state": "主跌熊市",
       "tone": "bear",
       "action": "减仓 / 防御",
+      "desc": "三因子同向偏空，估值盈利双杀",
       "active": false
     },
     {
       "tnx": "下行",
       "eps": "转弱",
       "nvda": "减速",
+      "tnxSentiment": "up",
+      "epsSentiment": "down",
+      "nvdaSentiment": "down",
       "state": "防御熊",
       "tone": "bear",
       "action": "低配 / 现金为王",
+      "desc": "盈利弱叠加 AI 减速，防御为主",
       "active": false
     },
     {
       "tnx": "横盘",
       "eps": "横盘",
       "nvda": "高位持平",
+      "tnxSentiment": "flat",
+      "epsSentiment": "flat",
+      "nvdaSentiment": "flat",
       "state": "震荡市",
       "tone": "chop",
       "action": "波段 / 高抛低吸",
+      "desc": "三因子横盘无方向，区间波段",
       "active": false
     }
   ],
@@ -169,5 +455,36 @@
       "det": "重估仓位，复看矩阵"
     }
   ],
+  "modelExplainer": {
+    "summary": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
+    "framework": [
+      {
+        "factor": "EPS（分子端）",
+        "role": "已实现盈利（TTM）同比，决定市场是牛是熊"
+      },
+      {
+        "factor": "TNX（分母端）",
+        "role": "无风险利率/贴现率，决定估值弹性与成长股压力"
+      },
+      {
+        "factor": "NVDA（集中度）",
+        "role": "AI 景气 + 指数集中度，决定指数级弹性与顶部信号"
+      }
+    ],
+    "howToRead": [
+      {
+        "part": "看三因子方向",
+        "what": "每个指标卡片的方向标签（上行/下行、加速/减速、扩张/转弱）"
+      },
+      {
+        "part": "查矩阵当前态",
+        "what": "三方向组合 → 6 态矩阵自动高亮当前市场状态 + 白话理由"
+      },
+      {
+        "part": "盯预警",
+        "what": "两条顶部预警触发即代表减仓信号（NVDA+EPS 双杀 / 利率破位）"
+      }
+    ]
+  },
   "sourceNote": "三因子全部自动抓取、免 key、无需人工维护：^TNX ← FRED DGS10 每日；NVDA 数据中心营收增速 ← SEC EDGAR 最新 10-Q 季度披露；SPX EPS ← multpl trailing TTM（同比口径，非 forward 预期，为同步指标）。结论由三因子方向组合经 6 态矩阵推断。任一源失败保留上次快照。"
 }
