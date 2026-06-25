@@ -1,5 +1,5 @@
 export const factorsData = {
-  "updatedAt": "2026-06-25T16:54:59+08:00",
+  "updatedAt": "2026-06-25T18:04:32+08:00",
   "date": "2026-06-25",
   "headline": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
   "verdict": {
@@ -15,13 +15,13 @@ export const factorsData = {
     "tnx": {
       "label": "^TNX",
       "name": "10 年期国债收益率",
-      "value": 4.32,
+      "value": 4.5,
       "unit": "%",
-      "date": "2026-05-22",
+      "date": "2026-06-23",
       "direction": "down",
       "directionText": "下行",
-      "delta": "近 20 日 -0.11pp · 52周 3.94–4.69%",
-      "meter": 55,
+      "delta": "近 20 日 -0.06pp · 52周 3.94–4.69%",
+      "meter": 67,
       "meterScale": [
         "3.5%",
         "4.0%",
@@ -35,14 +35,14 @@ export const factorsData = {
     "nvda": {
       "label": "NVDA",
       "name": "数据中心收入增速",
-      "value": 38,
+      "value": 92,
       "unit": "% YoY",
       "asOf": "2026-04-26（FY27Q1）",
-      "note": "Data Center $25.8B · YoY +38% · QoQ +14%",
+      "note": "Data Center $75.2B · YoY +92% · QoQ +21%",
       "direction": "speed",
       "directionText": "加速",
-      "delta": "YoY +38% · QoQ +14% · 季度 $25.8B",
-      "meter": 38,
+      "delta": "YoY +92% · QoQ +21% · 季度 $75.2B",
+      "meter": 92,
       "meterScale": [
         "0",
         "30%",
@@ -56,14 +56,14 @@ export const factorsData = {
     "eps": {
       "label": "SPX",
       "name": "Trailing EPS（TTM）",
-      "value": 16,
+      "value": 12,
       "unit": "% YoY",
-      "asOf": "2026-05",
-      "note": "TTM EPS $238.50 vs $205.00（2025-05）",
+      "asOf": "2025-09",
+      "note": "TTM EPS $241.50 vs $216.12（2024-10）",
       "direction": "up",
       "directionText": "扩张",
-      "delta": "YoY +16.3% · TTM $238.50",
-      "meter": 88,
+      "delta": "YoY +11.7% · TTM $241.50",
+      "meter": 72,
       "meterScale": [
         "-10%",
         "0",

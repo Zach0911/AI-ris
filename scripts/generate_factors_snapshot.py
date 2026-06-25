@@ -183,7 +183,7 @@ def fetch_nvda_datacenter() -> dict[str, Any]:
     forms = rec["form"]
     accs = rec["accessionNumber"]
     docs = rec["primaryDocument"]
-    periods = rec["periodOfReport"]
+    periods = rec["reportDate"]   # SEC submissions JSON uses 'reportDate', not 'periodOfReport'
     filed = rec["filingDate"]
     idx = next(i for i, f in enumerate(forms) if f == "10-Q")
     acc = accs[idx]
