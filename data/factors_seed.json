@@ -1,0 +1,13 @@
+{
+  "comment": "三因子配置（纯参数，无人工数据值）。NVDA/EPS 由脚本自动抓取：NVDA←SEC EDGAR 10-Q，EPS←multpl trailing TTM。本文件只保留 TNX 阈值与三因子刻度，一般不用改。",
+  "tnx": {
+    "range52w": [3.94, 4.69],
+    "warnThreshold": 4.70,
+    "scale": [3.5, 5.0],
+    "scaleLabels": ["3.5%", "4.0%", "4.5%", "5.0%"]
+  },
+  "nvdaScale": [0, 100],
+  "nvdaScaleLabels": ["0", "30%", "60%", "100%+"],
+  "epsScale": [-10, 20],
+  "epsScaleLabels": ["-10%", "0", "+10%", "+20%"]
+}

@@ -9,8 +9,9 @@
 - 主题传导状态：共振、传导、背离三类信号。
 - 映射解释：展示标签命中、主题纯度、流动性或替代关系。
 - 人物雷达：追踪特朗普、黄仁勋、马斯克公开发声后的上市公司市场信号。
+- 美股三因子：`^TNX` 10Y 国债收益率、NVDA 数据中心营收增速、SPX Trailing EPS 同比，全部自动抓取，给出 6 态市场判断与顶部预警。
 - 单页静态部署：用户无需注册，页面可直接部署到 GitHub Pages、Cloudflare Pages 或任意静态服务器。
-- 数据刷新入口：`scripts/generate_snapshot.py` 生成 `data/latest.json`，`scripts/generate_people_snapshot.py` 生成 `data/people-latest.json`。
+- 数据刷新入口：`scripts/generate_snapshot.py` 生成 `data/latest.json`，`scripts/generate_people_snapshot.py` 生成 `data/people-latest.json`，`scripts/generate_factors_snapshot.py` 生成 `data/factors-latest.json`。
 
 ## 本地预览
 
@@ -43,6 +44,7 @@ python3 scripts/e2e_smoke.py
 ```text
 data/latest.json
 data/people-latest.json
+data/factors-latest.json
 ```
 
 刷新脚本：
@@ -50,6 +52,7 @@ data/people-latest.json
 ```bash
 python3 scripts/generate_snapshot.py
 python3 scripts/generate_people_snapshot.py
+python3 scripts/generate_factors_snapshot.py
 ```
 
 脚本会尽量使用免费数据：
@@ -71,6 +74,24 @@ python3 scripts/generate_people_snapshot.py
 - 行情层：已入库事件每天早晚自动重算 `returnSinceMention`、`firstDayReturn` 和 `priceBasis`，页面只读取生成后的静态 JSON。
 
 这样可以做到行情准实时刷新，同时避免把传闻、私有公司、OTC 无稳定行情的标的展示为可计算结果。
+
+## 美股三因子
+
+三因子看板用一个分子、一个分母、一个集中度，直接给出市场状态判断。**三个因子全部自动抓取、免 API key、无需人工维护：**
+
+- `^TNX` 10 年期国债收益率（分母端 · 定估值贴现率）：每日从 FRED DGS10 CSV 自动抓取。脚本用近 20 个交易日的变动判断方向（±0.05pp 内记为横盘）。
+- NVDA 数据中心营收增速同比（AI 景气 + 指数集中度）：每次 10-Q 披露后，脚本自动从 SEC EDGAR 解析最新季度的 Data Center 行（保持原始数据中心口径，非总收入代理），用环比判断加速/减速。
+- SPX Trailing EPS（TTM）同比（分子端 · 已实现盈利）：从 multpl.com 月度 EPS 表自动抓取，取最新值与约 12 个月前对比计算同比。**为同步/滞后指标**——可靠的免 key 自动源里没有 Forward EPS，所以从 Forward 降级为 Trailing，信号会比预期滞后 1–2 季。
+
+判定逻辑：三因子方向组合映射到 6 态信号矩阵（主升牛市 / 扩散牛市 / 震荡偏强 / 主跌熊市 / 防御熊 / 震荡市），由脚本里的规则函数 `pick_verdict` 完成，结论 banner 与矩阵高亮自动一致。同时维护两个顶部预警：① NVDA 减速 + EPS 转弱共振；② TNX 破 52 周高点且 EPS 未对冲。
+
+刷新与数据：
+
+```bash
+python3 scripts/generate_factors_snapshot.py   # 抓 FRED + SEC EDGAR + multpl → 输出 data/factors-latest.json 与 src/factorsData.js
+```
+
+`data/factors_seed.json` 只保留 TNX 的 52 周区间、预警阈值和三因子刻度标签等**纯参数**，一般不用改；**不再包含任何需要人工维护的数据值**。任一数据源失败时脚本保留上一次快照，页面不会因断网而空白。
 
 ## 数据结构
 

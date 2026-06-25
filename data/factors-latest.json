@@ -1,0 +1,173 @@
+{
+  "updatedAt": "2026-06-25T16:54:59+08:00",
+  "date": "2026-06-25",
+  "headline": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
+  "verdict": {
+    "light": "🟢",
+    "title": "主升牛市",
+    "state": "主升牛市",
+    "tone": "bull",
+    "action": "维持 / 顺势仓位",
+    "confidence": 85,
+    "desc": "盈利同比扩张 + AI 景气加速 + 利率未压制，三因子同向偏多，主升逻辑延续"
+  },
+  "indicators": {
+    "tnx": {
+      "label": "^TNX",
+      "name": "10 年期国债收益率",
+      "value": 4.32,
+      "unit": "%",
+      "date": "2026-05-22",
+      "direction": "down",
+      "directionText": "下行",
+      "delta": "近 20 日 -0.11pp · 52周 3.94–4.69%",
+      "meter": 55,
+      "meterScale": [
+        "3.5%",
+        "4.0%",
+        "4.5%",
+        "5.0%"
+      ],
+      "light": "strong",
+      "hint": "分母端 · 定估值贴现率。快速上行杀估值，回落解压成长股",
+      "source": "FRED DGS10"
+    },
+    "nvda": {
+      "label": "NVDA",
+      "name": "数据中心收入增速",
+      "value": 38,
+      "unit": "% YoY",
+      "asOf": "2026-04-26（FY27Q1）",
+      "note": "Data Center $25.8B · YoY +38% · QoQ +14%",
+      "direction": "speed",
+      "directionText": "加速",
+      "delta": "YoY +38% · QoQ +14% · 季度 $25.8B",
+      "meter": 38,
+      "meterScale": [
+        "0",
+        "30%",
+        "60%",
+        "100%+"
+      ],
+      "light": "strong",
+      "hint": "AI 景气 + 指数集中度。连续 2 季 QoQ 减速是顶部领先信号",
+      "source": "SEC EDGAR 10-Q"
+    },
+    "eps": {
+      "label": "SPX",
+      "name": "Trailing EPS（TTM）",
+      "value": 16,
+      "unit": "% YoY",
+      "asOf": "2026-05",
+      "note": "TTM EPS $238.50 vs $205.00（2025-05）",
+      "direction": "up",
+      "directionText": "扩张",
+      "delta": "YoY +16.3% · TTM $238.50",
+      "meter": 88,
+      "meterScale": [
+        "-10%",
+        "0",
+        "+10%",
+        "+20%"
+      ],
+      "light": "strong",
+      "hint": "分子端 · 已实现盈利（TTM）。同步/滞后指标，同比转弱说明盈利开始减速",
+      "source": "multpl"
+    }
+  },
+  "alerts": [
+    {
+      "id": "top1",
+      "title": "顶部预警 ①　NVDA 减速 + EPS 转弱共振",
+      "detail": "NVDA 数据中心 QoQ 连续 2 季转负 且 trailing EPS 同比转弱 → AI 叙事 + 盈利双杀。注意 trailing 为同步指标，信号会比 forward 滞后 1–2 季。最可靠的减仓信号。",
+      "triggered": false,
+      "status": "未触发"
+    },
+    {
+      "id": "top2",
+      "title": "顶部预警 ②　利率破 4.7% + EPS 未对冲",
+      "detail": "TNX 突破 4.7%（52周高点）且 trailing EPS 未同步扩张 → 估值压缩无盈利对冲，成长股压力最大。",
+      "triggered": false,
+      "status": "未触发"
+    }
+  ],
+  "matrix": [
+    {
+      "tnx": "下行",
+      "eps": "扩张",
+      "nvda": "加速",
+      "state": "主升牛市",
+      "tone": "bull",
+      "action": "维持 / 顺势仓位",
+      "active": true
+    },
+    {
+      "tnx": "下行",
+      "eps": "扩张",
+      "nvda": "减速",
+      "state": "扩散牛市",
+      "tone": "bull",
+      "action": "轮动 / 加仓非 AI",
+      "active": false
+    },
+    {
+      "tnx": "上行",
+      "eps": "扩张",
+      "nvda": "加速",
+      "state": "震荡偏强",
+      "tone": "chop",
+      "action": "持仓观望",
+      "active": false
+    },
+    {
+      "tnx": "上行",
+      "eps": "转弱",
+      "nvda": "减速",
+      "state": "主跌熊市",
+      "tone": "bear",
+      "action": "减仓 / 防御",
+      "active": false
+    },
+    {
+      "tnx": "下行",
+      "eps": "转弱",
+      "nvda": "减速",
+      "state": "防御熊",
+      "tone": "bear",
+      "action": "低配 / 现金为王",
+      "active": false
+    },
+    {
+      "tnx": "横盘",
+      "eps": "横盘",
+      "nvda": "高位持平",
+      "state": "震荡市",
+      "tone": "chop",
+      "action": "波段 / 高抛低吸",
+      "active": false
+    }
+  ],
+  "pace": [
+    {
+      "freq": "每日",
+      "what": "^TNX 收盘 + 10Y–2Y 利差",
+      "det": "破 4.5% 提高警惕，破 4.7% 预警"
+    },
+    {
+      "freq": "每季",
+      "what": "NVDA 数据中心 QoQ/YoY",
+      "det": "10-Q 披露后 SEC EDGAR 自动取数"
+    },
+    {
+      "freq": "每月",
+      "what": "SPX trailing EPS 同比",
+      "det": "multpl 月度更新，看方向而非绝对值"
+    },
+    {
+      "freq": "触发式",
+      "what": "任一指标连续 2 期反向",
+      "det": "重估仓位，复看矩阵"
+    }
+  ],
+  "sourceNote": "三因子全部自动抓取、免 key、无需人工维护：^TNX ← FRED DGS10 每日；NVDA 数据中心营收增速 ← SEC EDGAR 最新 10-Q 季度披露；SPX EPS ← multpl trailing TTM（同比口径，非 forward 预期，为同步指标）。结论由三因子方向组合经 6 态矩阵推断。任一源失败保留上次快照。"
+}
