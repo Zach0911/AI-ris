@@ -34,8 +34,9 @@ def _tnx_series(end: float, start: float, days: int = 25) -> list[tuple[str, flo
     return pts
 
 
-def _nvda(cur: float, prev_q: float, yoy_q: float, period="2026-04-26") -> dict:
-    return {"cur": cur, "prev_q": prev_q, "yoy_q": yoy_q,
+def _nvda(cur: float, prev_q: float, yoy_q: float, period="2026-04-26",
+          acc="0001045810-26-000001") -> dict:
+    return {"accessionNumber": acc, "cur": cur, "prev_q": prev_q, "yoy_q": yoy_q,
             "yoy": (cur - yoy_q) / yoy_q * 100,
             "qoq": (cur - prev_q) / prev_q * 100,
             "period": period, "filing": "2026-05-29",
@@ -45,7 +46,25 @@ def _nvda(cur: float, prev_q: float, yoy_q: float, period="2026-04-26") -> dict:
 def _eps(latest: float, base: float, latest_dt: date, base_dt: date) -> dict:
     return {"latest_v": latest, "latest_dt": latest_dt,
             "base_v": base, "base_dt": base_dt,
-            "yoy": (latest - base) / base * 100}
+            "yoy": (latest - base) / base * 100,
+            "history": [{"date": latest_dt.isoformat(), "value": latest},
+                        {"date": base_dt.isoformat(), "value": base}]}
+
+
+def _patch_nvda(nvda_dict: dict) -> None:
+    """Wire the three new NVDA functions so build_snapshot never touches network."""
+    acc = nvda_dict.get("accessionNumber", "0001045810-26-000001")
+    gf.fetch_nvda_submissions = lambda: {"rec": {"form": ["10-Q"],
+                                                  "accessionNumber": [acc],
+                                                  "primaryDocument": ["nvda-10q.htm"],
+                                                  "reportDate": [nvda_dict["period"]],
+                                                  "filingDate": [nvda_dict["filing"]]},
+                                          "cik": "0001045810"}
+    gf.parse_nvda_10q = lambda a, d, p, f: nvda_dict
+    gf.backfill_nvda_history = lambda cache, subs: [
+        {"date": nvda_dict["period"], "value": round(nvda_dict["yoy"]),
+         "qoq": round(nvda_dict["qoq"], 1), "fiscal": nvda_dict["fiscal"]}]
+    gf.save_nvda_cache = lambda cache: None
 
 
 # Each case pins (tnx_dir, eps_dir, nvda_dir) → expected state.
@@ -61,13 +80,14 @@ CASES = [
 
 
 REQUIRED_INDICATOR_KEYS = {"label", "name", "value", "direction", "directionText",
-                           "delta", "meter", "meterScale", "light", "hint", "source"}
+                           "delta", "meter", "meterScale", "light", "hint", "source",
+                           "explain", "history"}
 
 
 def run_one(case: tuple) -> tuple[bool, str]:
     label, tnx_series, nvda_dict, eps_dict, expected_state, expected_tone = case
     gf.fetch_dgs10_series = lambda: tnx_series        # type: ignore
-    gf.fetch_nvda_datacenter = lambda: nvda_dict      # type: ignore
+    _patch_nvda(nvda_dict)
     gf.fetch_spx_eps = lambda: eps_dict              # type: ignore
 
     snap = gf.build_snapshot(SEED)
@@ -76,9 +96,18 @@ def run_one(case: tuple) -> tuple[bool, str]:
 
     # Top-level shape
     for key in ("updatedAt", "date", "headline", "verdict", "indicators",
-                "alerts", "matrix", "pace", "sourceNote"):
+                "alerts", "matrix", "pace", "sourceNote", "modelExplainer"):
         if key not in snap:
             problems.append(f"missing top key: {key}")
+
+    # modelExplainer shape
+    me = snap.get("modelExplainer", {})
+    if not me.get("summary"):
+        problems.append("modelExplainer.summary empty")
+    if not isinstance(me.get("framework"), list) or len(me["framework"]) != 3:
+        problems.append(f"modelExplainer.framework must be 3 items, got {me.get('framework')!r}")
+    if not isinstance(me.get("howToRead"), list) or not me["howToRead"]:
+        problems.append("modelExplainer.howToRead empty")
 
     # Verdict
     v = snap["verdict"]
@@ -106,6 +135,22 @@ def run_one(case: tuple) -> tuple[bool, str]:
         # direction value legal
         if ind[name].get("direction") not in {"up", "down", "flat", "speed", "slow", "hold"}:
             problems.append(f"indicator {name} direction={ind[name].get('direction')!r}")
+        # explain shape
+        ex = ind[name].get("explain", {})
+        for k in ("definition", "current", "threshold"):
+            if not ex.get(k):
+                problems.append(f"indicator {name} explain.{k} empty")
+        # history shape
+        hist = ind[name].get("history")
+        if not isinstance(hist, list) or not hist:
+            problems.append(f"indicator {name} history empty")
+            continue
+        if name == "nvda" and len(hist) > 8:
+            problems.append(f"indicator nvda history len={len(hist)} > 8")
+        for pt in hist:
+            if "date" not in pt or "value" not in pt:
+                problems.append(f"indicator {name} history point missing date/value: {pt!r}")
+                break
 
     # Alerts
     alerts = snap["alerts"]
@@ -127,6 +172,16 @@ def run_one(case: tuple) -> tuple[bool, str]:
         problems.append(f"expected exactly 1 active matrix row, got {len(active)}")
     elif active[0]["state"] != expected_state:
         problems.append(f"active row={active[0]['state']!r} expected {expected_state!r}")
+    elif not active[0].get("reason"):
+        problems.append("active row missing non-empty reason")
+
+    # Every row needs desc + sentiment coding (for the new card/legend layout)
+    for r in rows:
+        if not r.get("desc"):
+            problems.append(f"row {r['state']} missing desc")
+        for skey in ("tnxSentiment", "epsSentiment", "nvdaSentiment"):
+            if r.get(skey) not in {"up", "down", "flat"}:
+                problems.append(f"row {r['state']} {skey}={r.get(skey)!r}")
 
     # JSON serializable
     try:
@@ -149,7 +204,7 @@ def main() -> int:
 
     # Alert-trigger path sanity: 主跌熊市 should fire alert #1 (NVDA slow + EPS down)
     gf.fetch_dgs10_series = lambda: _tnx_series(4.65, 4.35)
-    gf.fetch_nvda_datacenter = lambda: _nvda(18000, 22000, 14000)
+    _patch_nvda(_nvda(18000, 22000, 14000))
     gf.fetch_spx_eps = lambda: _eps(190.0, 210.0, date(2026,5,1), date(2025,5,1))
     snap = gf.build_snapshot(SEED)
     a1 = next(a for a in snap["alerts"] if a["id"] == "top1")
@@ -161,7 +216,7 @@ def main() -> int:
 
     # Alert-trigger #2: TNX up + >= warnThreshold + EPS not up
     gf.fetch_dgs10_series = lambda: _tnx_series(4.75, 4.50)  # up, value 4.75 >= 4.70
-    gf.fetch_nvda_datacenter = lambda: _nvda(22000, 21600, 18760)
+    _patch_nvda(_nvda(22000, 21600, 18760))
     gf.fetch_spx_eps = lambda: _eps(200.0, 205.0, date(2026,5,1), date(2025,5,1))  # eps down
     snap = gf.build_snapshot(SEED)
     a2 = next(a for a in snap["alerts"] if a["id"] == "top2")
@@ -171,13 +226,42 @@ def main() -> int:
         print(f"[FAIL] alert#2 not triggered (TNX={snap['indicators']['tnx']['value']})")
         all_ok = False
 
+    # NVDA backfill: 3 10-Qs, one intentionally fails parse → ≤3 points, no throw.
+    # Reload gf to restore the real backfill_nvda_history (alert tests above
+    # replaced it with a canned lambda via _patch_nvda).
+    import importlib
+    importlib.reload(gf)
+    fake_subs = {"rec": {"form": ["10-Q", "10-Q", "10-Q"],
+                         "accessionNumber": ["A-1", "A-2", "A-3"],
+                         "primaryDocument": ["d1.htm", "d2.htm", "d3.htm"],
+                         "reportDate": ["2026-04-26", "2026-01-25", "2025-10-26"],
+                         "filingDate": ["2026-05-29", "2026-02-27", "2025-11-21"]},
+                 "cik": "0001045810"}
+    parse_calls = {"A-1": _nvda(26000, 22600, 18760, period="2026-04-26", acc="A-1"),
+                   "A-2": _nvda(22600, 18760, 14000, period="2026-01-25", acc="A-2")}
+    def _fake_parse(acc, doc, period, filing):
+        if acc == "A-3":
+            raise RuntimeError("intentional parse miss for A-3")
+        return parse_calls[acc]
+    gf.parse_nvda_10q = _fake_parse
+    cache = {"nvda_by_acc": {}, "updatedAt": None}
+    pts = gf.backfill_nvda_history(cache, fake_subs)
+    if len(pts) <= 3 and all("date" in p and "value" in p for p in pts):
+        print(f"[PASS] backfill: {len(pts)} points, no throw on parse miss")
+    else:
+        print(f"[FAIL] backfill: got {len(pts)} points, shape={pts!r}")
+        all_ok = False
+    if cache["nvda_by_acc"].get("A-3") == "null":
+        print(f"[PASS] backfill: failed acc cached as 'null' (no re-fetch next run)")
+    else:
+        print(f"[FAIL] backfill: failed acc not marked null (got {cache['nvda_by_acc'].get('A-3')!r})")
+        all_ok = False
+
     # Tolerance: main() preserves old snapshot when fetch fails
     out = ROOT / "data" / "factors-latest.json"
     if out.exists():
         original = out.read_text(encoding="utf-8")
         gf.fetch_dgs10_series = lambda: (_ for _ in ()).throw(RuntimeError("simulated"))
-        gf.fetch_nvda_datacenter = lambda: (_ for _ in ()).throw(RuntimeError("simulated"))
-        gf.fetch_spx_eps = lambda: (_ for _ in ()).throw(RuntimeError("simulated"))
         try:
             gf.main()
             after = out.read_text(encoding="utf-8")
@@ -192,9 +276,79 @@ def main() -> int:
     else:
         print("[SKIP] tolerance: no existing factors-latest.json to compare")
 
+    # Real-fixture parse test (honors mock-test-real-parse-path memory):
+    # exercises the actual JSON/HTML parse paths with saved responses, so
+    # key-name bugs like 'reportDate' vs 'periodOfReport' can't hide.
+    fixture_ok = _test_real_parse()
+    if fixture_ok is False:
+        all_ok = False
+
     print()
     print("ALL PASS" if all_ok else "SOME FAILED")
     return 0 if all_ok else 1
+
+
+def _test_real_parse() -> bool | None:
+    """Returns True if pass, False if fail, None if skipped (no fixtures)."""
+    fixdir = ROOT / "scripts" / "fixtures"
+    sec_sub = fixdir / "sec_submissions.json"
+    multpl = fixdir / "multpl_eps.html"
+    fred = fixdir / "fred_dgs10.csv"
+    tenq = fixdir / "sec_10q.html"
+    if not all(p.exists() for p in (sec_sub, multpl, fred, tenq)):
+        print("[SKIP] real-parse: fixtures not captured (run scripts/capture_factors_fixtures.py)")
+        return None
+
+    # Restore real parse/fetch implementations by reloading the module, then
+    # stub only http_get (the real fetchers call it via global lookup at call time).
+    import importlib
+    importlib.reload(gf)
+    problems = []
+    def _fake_http_get(url, timeout, ua=gf.EDGAR_UA):
+        if "data.sec.gov/submissions" in url:
+            return sec_sub.read_text(encoding="utf-8")
+        if "www.sec.gov/Archives" in url:
+            return tenq.read_text(encoding="utf-8")
+        if "multpl.com" in url:
+            return multpl.read_text(encoding="utf-8")
+        if "fred.stlouisfed.org" in url:
+            return fred.read_text(encoding="utf-8")
+        raise RuntimeError(f"unexpected url in fixture test: {url}")
+    gf.http_get = _fake_http_get
+
+    # SEC submissions must surface 'reportDate' (the real key), not 'periodOfReport'
+    subs = gf.fetch_nvda_submissions()
+    rec = subs["rec"]
+    if "reportDate" not in rec or "accessionNumber" not in rec:
+        problems.append(f"sec submissions missing reportDate/accessionNumber; keys={list(rec)[:8]}")
+    forms = rec["form"]
+    accs = rec["accessionNumber"]
+    docs = rec["primaryDocument"]
+    periods = rec["reportDate"]
+    filed = rec["filingDate"]
+    idx = next((i for i, f in enumerate(forms) if f == "10-Q"), None)
+    if idx is None:
+        problems.append("no 10-Q found in fixture submissions")
+    else:
+        parsed = gf.parse_nvda_10q(accs[idx], docs[idx], periods[idx], filed[idx])
+        if "yoy" not in parsed or "qoq" not in parsed:
+            problems.append(f"parse_nvda_10q output missing yoy/qoq: {parsed!r}")
+
+    # FRED CSV parse
+    series = gf.fetch_dgs10_series()
+    if not series or not isinstance(series[0], tuple):
+        problems.append(f"fetch_dgs10_series returned empty/shape-wrong: {series[:2]!r}")
+
+    # multpl EPS parse (includes history)
+    eps = gf.fetch_spx_eps()
+    if "yoy" not in eps or "history" not in eps or not eps["history"]:
+        problems.append(f"fetch_spx_eps missing yoy/history: {eps!r}")
+
+    if problems:
+        print(f"[FAIL] real-parse: {'; '.join(problems)}")
+        return False
+    print(f"[PASS] real-parse: SEC submissions key='reportDate', 10-Q/FRED/multpl all parsed")
+    return True
 
 
 if __name__ == "__main__":

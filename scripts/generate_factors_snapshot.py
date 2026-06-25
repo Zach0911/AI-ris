@@ -33,7 +33,12 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTFILE = ROOT / "data" / "factors-latest.json"
 FALLBACK_JS = ROOT / "src" / "factorsData.js"
 SEED = ROOT / "data" / "factors_seed.json"
+HISTFILE = ROOT / "data" / "factors-history.json"
 BJT = timezone(timedelta(hours=8))
+
+NVDA_HISTORY_QUARTERS = 8
+EPS_HISTORY_MONTHS = 24
+TNX_HISTORY_POINTS = 30
 
 # --- FRED (^TNX) -------------------------------------------------------------
 FRED_DGS10 = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd={start}"
@@ -58,18 +63,32 @@ EDGAR_UA = "AI-ris snapshot research@example.com"
 # ---- 6-state signal matrix -------------------------------------------------
 MATRIX: list[dict[str, str]] = [
     {"tnx": "down", "eps": "up", "nvda": "speed", "state": "主升牛市", "tone": "bull",
-     "action": "维持 / 顺势仓位", "confidence": 85, "light": "🟢"},
+     "action": "维持 / 顺势仓位", "confidence": 85, "light": "🟢",
+     "desc": "三因子同向偏多，主升延续"},
     {"tnx": "down", "eps": "up", "nvda": "slow", "state": "扩散牛市", "tone": "bull",
-     "action": "轮动 / 加仓非 AI", "confidence": 70, "light": "🟢"},
+     "action": "轮动 / 加仓非 AI", "confidence": 70, "light": "🟢",
+     "desc": "估值盈利偏多、AI 减速，行情扩散"},
     {"tnx": "up", "eps": "up", "nvda": "speed", "state": "震荡偏强", "tone": "chop",
-     "action": "持仓观望", "confidence": 55, "light": "🟡"},
+     "action": "持仓观望", "confidence": 55, "light": "🟡",
+     "desc": "盈利强但估值承压，结构机会"},
     {"tnx": "up", "eps": "down", "nvda": "slow", "state": "主跌熊市", "tone": "bear",
-     "action": "减仓 / 防御", "confidence": 80, "light": "🔴"},
+     "action": "减仓 / 防御", "confidence": 80, "light": "🔴",
+     "desc": "三因子同向偏空，估值盈利双杀"},
     {"tnx": "down", "eps": "down", "nvda": "slow", "state": "防御熊", "tone": "bear",
-     "action": "低配 / 现金为王", "confidence": 65, "light": "🔴"},
+     "action": "低配 / 现金为王", "confidence": 65, "light": "🔴",
+     "desc": "盈利弱叠加 AI 减速，防御为主"},
     {"tnx": "flat", "eps": "flat", "nvda": "hold", "state": "震荡市", "tone": "chop",
-     "action": "波段 / 高抛低吸", "confidence": 45, "light": "🟡"},
+     "action": "波段 / 高抛低吸", "confidence": 45, "light": "🟡",
+     "desc": "三因子横盘无方向，区间波段"},
 ]
+
+# Each factor direction mapped to bull/bear/neutral sentiment for color coding.
+# TNX is inverse: down = 解压估值(利好), up = 压制估值(利空).
+SENTIMENT = {
+    "tnx": {"down": "up", "flat": "flat", "up": "down"},
+    "eps": {"up": "up", "flat": "flat", "down": "down"},
+    "nvda": {"speed": "up", "hold": "flat", "slow": "down"},
+}
 
 DEFAULT_VERDICT = {
     "state": "震荡市", "title": "震荡市", "tone": "chop", "action": "波段 / 高抛低吸",
@@ -147,6 +166,7 @@ def classify_tnx(series: list[tuple[str, float]], cfg: dict[str, Any]) -> dict[s
     else:
         direction = "flat"
     move = round(delta, 2)
+    warn = cfg["warnThreshold"]
     return {
         "label": "^TNX",
         "name": "10 年期国债收益率",
@@ -161,6 +181,11 @@ def classify_tnx(series: list[tuple[str, float]], cfg: dict[str, Any]) -> dict[s
         "light": LIGHT_KIND[("tnx", direction)],
         "hint": HINT["tnx"],
         "source": "FRED DGS10",
+        "explain": {
+            "definition": "美国 10 年期国债收益率，市场无风险利率基准，定估值贴现率（分母端）。",
+            "current": f"当前 {latest}%，近 {TNX_TREND_DAYS} 日{LABEL['tnx'][direction]} {('+' if move >= 0 else '')}{move}pp。",
+            "threshold": f"52周区间 {lo52}–{hi52}%，预警线 {warn}%（破位+EPS 未对冲即触发估值压缩预警）。",
+        },
     }
 
 
@@ -177,20 +202,15 @@ def _fiscal_label(period: str) -> str:
         return ""
 
 
-def fetch_nvda_datacenter() -> dict[str, Any]:
+def fetch_nvda_submissions() -> dict[str, Any]:
+    """GET NVDA SEC submissions JSON and return the parsed recent-filings block."""
     subs = json.loads(http_get(SEC_SUBMISSIONS, SEC_TIMEOUT))
     rec = subs["filings"]["recent"]
-    forms = rec["form"]
-    accs = rec["accessionNumber"]
-    docs = rec["primaryDocument"]
-    periods = rec["reportDate"]   # SEC submissions JSON uses 'reportDate', not 'periodOfReport'
-    filed = rec["filingDate"]
-    idx = next(i for i, f in enumerate(forms) if f == "10-Q")
-    acc = accs[idx]
-    doc = docs[idx]
-    period = periods[idx]
-    filing = filed[idx]
+    return {"rec": rec, "cik": subs.get("cik", "0001045810")}
 
+
+def parse_nvda_10q(acc: str, doc: str, period: str, filing: str) -> dict[str, Any]:
+    """Fetch one 10-Q and parse its Data Center quarterly row. Raises on miss."""
     html = http_get(SEC_DOC.format(acc=acc.replace("-", ""), doc=doc), SEC_TIMEOUT)
     text = re.sub(r"<[^>]+>", " ", html)
     text = re.sub(r"&#\d+;|&[a-z]+;", " ", text)
@@ -207,9 +227,86 @@ def fetch_nvda_datacenter() -> dict[str, Any]:
     yoy_q = float(m.group(3).replace(",", ""))
     yoy = (cur - yoy_q) / yoy_q * 100
     qoq = (cur - prev_q) / prev_q * 100
-    return {"cur": cur, "prev_q": prev_q, "yoy_q": yoy_q,
+    return {"accessionNumber": acc, "cur": cur, "prev_q": prev_q, "yoy_q": yoy_q,
             "yoy": yoy, "qoq": qoq, "period": period, "filing": filing,
             "fiscal": _fiscal_label(period)}
+
+
+def fetch_nvda_datacenter() -> dict[str, Any]:
+    """Backward-compatible single-quarter fetch. Shape excludes accessionNumber."""
+    subs = fetch_nvda_submissions()
+    rec = subs["rec"]
+    forms = rec["form"]
+    accs = rec["accessionNumber"]
+    docs = rec["primaryDocument"]
+    periods = rec["reportDate"]   # SEC submissions JSON uses 'reportDate', not 'periodOfReport'
+    filed = rec["filingDate"]
+    idx = next(i for i, f in enumerate(forms) if f == "10-Q")
+    parsed = parse_nvda_10q(accs[idx], docs[idx], periods[idx], filed[idx])
+    parsed.pop("accessionNumber", None)
+    return parsed
+
+
+def load_nvda_cache() -> dict[str, Any]:
+    if not HISTFILE.exists():
+        return {"nvda_by_acc": {}, "updatedAt": None}
+    try:
+        return json.loads(HISTFILE.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"nvda_by_acc": {}, "updatedAt": None}
+
+
+def save_nvda_cache(cache: dict[str, Any]) -> None:
+    cache["updatedAt"] = datetime.now(BJT).strftime("%Y-%m-%dT%H:%M:%S+08:00")
+    try:
+        HISTFILE.write_text(json.dumps(cache, ensure_ascii=False, indent=2),
+                            encoding="utf-8")
+    except OSError as exc:
+        print(f"缓存写入失败（{exc}），不影响快照")
+
+
+def backfill_nvda_history(cache: dict[str, Any], subs: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return up to NVDA_HISTORY_QUARTERS history points, newest first.
+
+    Each point: {"date": period, "value": round(yoy), "qoq": ..., "fiscal": ...}.
+    Cached by accessionNumber to avoid re-fetching old 10-Qs each run. A failed
+    parse is recorded as null in the cache so we don't retry every run.
+    """
+    rec = subs["rec"]
+    forms = rec["form"]
+    accs = rec["accessionNumber"]
+    docs = rec["primaryDocument"]
+    periods = rec["reportDate"]
+    filed = rec["filingDate"]
+    ten_q_idx = [i for i, f in enumerate(forms) if f == "10-Q"][:NVDA_HISTORY_QUARTERS]
+
+    by_acc = cache.setdefault("nvda_by_acc", {})
+    points: list[dict[str, Any]] = []
+    for i in ten_q_idx:
+        acc = accs[i]
+        period = periods[i]
+        filing = filed[i]
+        cached = by_acc.get(acc)
+        if isinstance(cached, dict):
+            points.append({"date": cached["period"],
+                           "value": round(cached["yoy"]),
+                           "qoq": round(cached.get("qoq", 0), 1),
+                           "fiscal": cached.get("fiscal", "")})
+            continue
+        if cached == "null":
+            continue  # previously failed parse; don't retry every run
+        try:
+            parsed = parse_nvda_10q(acc, docs[i], period, filing)
+            by_acc[acc] = parsed
+            points.append({"date": parsed["period"],
+                           "value": round(parsed["yoy"]),
+                           "qoq": round(parsed["qoq"], 1),
+                           "fiscal": parsed.get("fiscal", "")})
+        except (RuntimeError, OSError):
+            by_acc[acc] = "null"
+
+    points.sort(key=lambda p: p["date"], reverse=True)
+    return points
 
 
 def classify_nvda(dc: dict[str, Any], scale_labels: list[str]) -> dict[str, Any]:
@@ -236,6 +333,11 @@ def classify_nvda(dc: dict[str, Any], scale_labels: list[str]) -> dict[str, Any]
         "light": LIGHT_KIND[("nvda", direction)],
         "hint": HINT["nvda"],
         "source": "SEC EDGAR 10-Q",
+        "explain": {
+            "definition": "英伟达数据中心业务收入同比/环比增速，AI 景气与指数集中度的代理指标。",
+            "current": f"当前 YoY {yoy:+.0f}%、QoQ {qoq:+.0f}%（{dc['period']}{fiscal}）。",
+            "threshold": "QoQ ≥5%=加速，0–5%=高位持平，≤0=减速；连续 2 季 QoQ 转负为顶部领先信号。",
+        },
     }
 
 
@@ -261,8 +363,10 @@ def fetch_spx_eps() -> dict[str, Any]:
     target = latest_dt - timedelta(days=330)
     baseline = next((p for p in pts if p[0] <= target), pts[min(12, len(pts) - 1)])
     yoy = (latest_v - baseline[1]) / baseline[1] * 100
+    history = [{"date": dt.isoformat(), "value": v} for dt, v in pts[:EPS_HISTORY_MONTHS]]
     return {"latest_v": latest_v, "latest_dt": latest_dt,
-            "base_v": baseline[1], "base_dt": baseline[0], "yoy": yoy}
+            "base_v": baseline[1], "base_dt": baseline[0], "yoy": yoy,
+            "history": history}
 
 
 def classify_eps(eps: dict[str, Any], scale_labels: list[str]) -> dict[str, Any]:
@@ -289,6 +393,11 @@ def classify_eps(eps: dict[str, Any], scale_labels: list[str]) -> dict[str, Any]
         "light": LIGHT_KIND[("eps", direction)],
         "hint": HINT["eps"],
         "source": "multpl",
+        "explain": {
+            "definition": "标普 500 滚动 12 个月每股盈利（TTM）同比，分子端 · 已实现盈利。",
+            "current": f"当前 TTM EPS ${eps['latest_v']:.2f}，同比 {yoy:+.1f}%（对比 {eps['base_dt'].strftime('%Y-%m')}）。",
+            "threshold": "同比 >2%=扩张，<-2%=转弱；TTM 为同步/滞后指标，信号比 forward 晚 1–2 季。",
+        },
     }
 
 
@@ -344,20 +453,62 @@ def build_alerts(tnx: dict, eps: dict, nvda: dict, warn_threshold: float) -> lis
     ]
 
 
-def build_matrix_rows(active_state: str) -> list[dict[str, Any]]:
+def build_matrix_rows(active_state: str, tnx_dir: str = "", eps_dir: str = "",
+                      nvda_dir: str = "") -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for row in MATRIX:
-        rows.append({
+        is_active = (row["state"] == active_state
+                     and not any(r["state"] == active_state and r.get("active") for r in rows))
+        entry = {
             "tnx": LABEL["tnx"][row["tnx"]],
             "eps": LABEL["eps"][row["eps"]],
             "nvda": LABEL["nvda"][row["nvda"]],
+            "tnxSentiment": SENTIMENT["tnx"][row["tnx"]],
+            "epsSentiment": SENTIMENT["eps"][row["eps"]],
+            "nvdaSentiment": SENTIMENT["nvda"][row["nvda"]],
             "state": row["state"],
             "tone": row["tone"],
             "action": row["action"],
-            "active": (row["state"] == active_state
-                       and not any(r["state"] == active_state and r["active"] for r in rows)),
-        })
+            "desc": row["desc"],
+            "active": is_active,
+        }
+        if is_active:
+            entry["reason"] = _active_reason(row["state"], tnx_dir, eps_dir, nvda_dir)
+        rows.append(entry)
     return rows
+
+
+def _active_reason(state: str, tnx_dir: str, eps_dir: str, nvda_dir: str) -> str:
+    """Plain-language explanation of why the current state is what it is."""
+    tnx_txt = {"down": "下行（解压估值）", "flat": "横盘（利率中性）", "up": "上行（压制估值）"}.get(tnx_dir, "")
+    eps_txt = {"up": "扩张（盈利增长）", "flat": "横盘（盈利中性）", "down": "转弱（盈利承压）"}.get(eps_dir, "")
+    nvda_txt = {"speed": "加速（AI 景气上行）", "hold": "高位持平（AI 中性）", "slow": "减速（AI 引擎降温）"}.get(nvda_dir, "")
+    tail = {
+        "主升牛市": "→ 三因子同向偏多，主升逻辑延续",
+        "扩散牛市": "→ 资金向非 AI 板块扩散，行情 breadth 改善",
+        "震荡偏强": "→ 盈利扛住估值压力，结构性机会为主",
+        "主跌熊市": "→ 三因子同向偏空，估值与盈利双杀，主跌风险最高",
+        "防御熊": "→ 利率回落抵不住盈利收缩，防御为主",
+        "震荡市": "→ 三因子相互抵消，区间震荡，波段操作为主",
+    }.get(state, "")
+    parts = [p for p in (tnx_txt, eps_txt, nvda_txt) if p]
+    return f"为什么是【{state}】：{' + '.join(parts)} {tail}" if parts else tail
+
+
+def build_explainer() -> dict[str, Any]:
+    return {
+        "summary": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
+        "framework": [
+            {"factor": "EPS（分子端）", "role": "已实现盈利（TTM）同比，决定市场是牛是熊"},
+            {"factor": "TNX（分母端）", "role": "无风险利率/贴现率，决定估值弹性与成长股压力"},
+            {"factor": "NVDA（集中度）", "role": "AI 景气 + 指数集中度，决定指数级弹性与顶部信号"},
+        ],
+        "howToRead": [
+            {"part": "看三因子方向", "what": "每个指标卡片的方向标签（上行/下行、加速/减速、扩张/转弱）"},
+            {"part": "查矩阵当前态", "what": "三方向组合 → 6 态矩阵自动高亮当前市场状态 + 白话理由"},
+            {"part": "盯预警", "what": "两条顶部预警触发即代表减仓信号（NVDA+EPS 双杀 / 利率破位）"},
+        ],
+    }
 
 
 PACE = [
@@ -369,12 +520,35 @@ PACE = [
 
 
 def build_snapshot(seed: dict[str, Any]) -> dict[str, Any]:
-    tnx = classify_tnx(fetch_dgs10_series(), seed["tnx"])
-    nvda = classify_nvda(fetch_nvda_datacenter(), seed["nvdaScaleLabels"])
-    eps = classify_eps(fetch_spx_eps(), seed["epsScaleLabels"])
+    cache = load_nvda_cache()
+
+    tnx_series = fetch_dgs10_series()
+    tnx = classify_tnx(tnx_series, seed["tnx"])
+    tnx["history"] = [{"date": d, "value": v}
+                      for d, v in tnx_series[-TNX_HISTORY_POINTS:]]
+
+    subs = fetch_nvda_submissions()
+    rec = subs["rec"]
+    forms = rec["form"]
+    accs = rec["accessionNumber"]
+    docs = rec["primaryDocument"]
+    periods = rec["reportDate"]
+    filed = rec["filingDate"]
+    idx = next(i for i, f in enumerate(forms) if f == "10-Q")
+    nvda_parsed = parse_nvda_10q(accs[idx], docs[idx], periods[idx], filed[idx])
+    nvda_hist = backfill_nvda_history(cache, subs)
+    save_nvda_cache(cache)
+    nvda = classify_nvda(nvda_parsed, seed["nvdaScaleLabels"])
+    nvda["history"] = [{"date": p["date"], "value": p["value"]} for p in nvda_hist]
+
+    eps_raw = fetch_spx_eps()
+    eps = classify_eps(eps_raw, seed["epsScaleLabels"])
+    eps["history"] = eps_raw["history"]
+
     verdict = pick_verdict(tnx["direction"], eps["direction"], nvda["direction"])
     alerts = build_alerts(tnx, eps, nvda, seed["tnx"]["warnThreshold"])
-    matrix_rows = build_matrix_rows(verdict["state"])
+    matrix_rows = build_matrix_rows(verdict["state"], tnx["direction"],
+                                    eps["direction"], nvda["direction"])
     return {
         "updatedAt": datetime.now(BJT).strftime("%Y-%m-%dT%H:%M:%S+08:00"),
         "date": datetime.now(BJT).strftime("%Y-%m-%d"),
@@ -384,6 +558,7 @@ def build_snapshot(seed: dict[str, Any]) -> dict[str, Any]:
         "alerts": alerts,
         "matrix": matrix_rows,
         "pace": PACE,
+        "modelExplainer": build_explainer(),
         "sourceNote": (
             "三因子全部自动抓取、免 key、无需人工维护："
             "^TNX ← FRED DGS10 每日；NVDA 数据中心营收增速 ← SEC EDGAR 最新 10-Q 季度披露；"
