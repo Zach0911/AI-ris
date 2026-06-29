@@ -127,8 +127,13 @@ def run_agent_loop(snapshot: dict, history: list[dict],
         messages.append(_assistant_msg_with_tool(thought, tc))
         messages.append({"role": "tool", "tool_call_id": tc.id, "content": result})
 
+    trace.append({
+        "thought": "已达最大迭代轮次，本轮以观望收尾",
+        "action": "HOLD（观望）",
+        "observation": "Agent 未在限定轮次内提交建议，按观望处理",
+    })
     return {"mode": "live", "iterations": MAX_ITERATIONS, "trace": trace,
-            "suggestion": None, "error": "超过最大迭代仍未决策"}
+            "suggestion": None, "error": None}
 
 
 def mock_judge(snapshot: dict, history: list[dict], error: str | None = None) -> dict:

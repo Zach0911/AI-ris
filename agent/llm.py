@@ -84,7 +84,7 @@ def build_system_prompt(ticker: str) -> str:
 1. 感知：用户消息已给你当前指标快照、历史胜率、最近已结算建议。
 2. 思考：用「Thought: ...」开头，简述你对当前趋势/结构的判断与依据。
 3. 行动：调用工具或给出结论。
-   - 想看某指标细节 → 调 get_indicator。
+   - 用户消息已给出全部指标快照，通常无需再调 get_indicator；仅在需要复核某个具体值时才调。
    - 想复盘自己最近表现 → 调 get_recent_suggestions。
    - 形成明确建议 → 调 submit_suggestion（方向/信心度/周期/理由）。
    - 判断不清晰、信号矛盾 → 不调工具，直接输出 HOLD 并说明原因。
@@ -134,6 +134,7 @@ def build_user_message(snapshot: dict, win_rate: dict, recent: list[dict],
         lines.append("最近已结算建议：" + " | ".join(sample))
     else:
         lines.append("暂无历史建议，这是首次运行。")
+    lines.append("以上指标已是完整快照，可直接据此判断，无需逐个调用 get_indicator 复核。")
     lines.append("请给出本轮判断与建议（Thought 开头，然后调用工具或 HOLD）。")
     return "\n".join(lines)
 
