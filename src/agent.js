@@ -31,6 +31,15 @@ function fmt(n, d = 2) {
   return Number(n).toFixed(d);
 }
 
+function fmtBeijing(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso).replace("T", " ").slice(0, 16);
+  const b = new Date(d.getTime() + 8 * 3600 * 1000);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${b.getUTCFullYear()}-${p(b.getUTCMonth() + 1)}-${p(b.getUTCDate())} ${p(b.getUTCHours())}:${p(b.getUTCMinutes())}`;
+}
+
 function isValidSnapshot(s) {
   return Boolean(s && s.agent && s.latestRun && s.winRate && Array.isArray(s.history));
 }
@@ -39,7 +48,7 @@ function renderHeader(a) {
   const mode = a.mode || "mock";
   const cls = MODE_CLASS[mode] || MODE_CLASS.mock;
   const txt = MODE_TEXT[mode] || mode;
-  const last = a.lastRun ? String(a.lastRun).replace("T", " ").slice(0, 16) : "—";
+  const last = fmtBeijing(a.lastRun);
   const err = a.error ? `<span class="agent-err">⚠ ${escapeHtml(a.error)}</span>` : "";
   return `<div class="agent-head">
     <div class="agent-head-main">

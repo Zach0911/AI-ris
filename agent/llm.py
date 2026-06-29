@@ -96,6 +96,8 @@ def build_system_prompt(ticker: str) -> str:
 - 同时只允许一条 open 建议：若已有 open 建议在跟踪，本轮优先复盘而非重复下单（但仍可 submit 一条新方向以覆盖判断，系统会处理）。
 - horizon：ADX>=25 且 EMA60 同向 → trend；否则 swing。
 
+输出格式：纯文本中文，不要使用任何 Markdown 符号（如 **、*、#、` 等），直接写即可。
+
 每次回复务必以「Thought:」开头，然后调用工具或输出 HOLD。"""
 
 
