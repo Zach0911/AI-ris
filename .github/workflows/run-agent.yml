@@ -1,0 +1,48 @@
+name: AI 研判 Agent 运行
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/run-agent.yml"
+      - "agent/**"
+      - "requirements.txt"
+  schedule:
+    - cron: "30 21 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 安装依赖
+        run: python -m pip install -r requirements.txt
+
+      - name: 运行 Agent 研判
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.SERPER_API_KEY }}
+          AGENT_TICKER: QQQ
+        run: python -m agent.run
+
+      - name: 提交研判快照
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/agent-latest.json data/agent-history.json src/agentData.js
+          git diff --staged --quiet || git commit -m "data: AI 研判 Agent 更新快照"
+          git push

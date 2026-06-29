@@ -39,6 +39,7 @@
         <button class="page-tab active" data-page-tab="radar" type="button">跨市雷达</button>
         <button class="page-tab" data-page-tab="people" type="button">人物雷达</button>
         <button class="page-tab" data-page-tab="factors" type="button">美股三因子</button>
+        <button class="page-tab" data-page-tab="agent" type="button">AI 研判</button>
       </nav>
 
       <section class="summary-grid" id="summary-grid" data-page-panel="radar" aria-label="市场摘要"></section>
@@ -141,10 +142,12 @@
 
       <section class="people-section hidden" data-page-panel="people" aria-label="人物雷达"></section>
       <section class="factors-panel hidden" data-page-panel="factors" id="factors-panel" aria-label="美股三因子"></section>
+      <section class="agent-panel hidden" data-page-panel="agent" id="agent-panel" aria-label="AI 趋势研判"></section>
       <section class="faq-section hidden" data-page-panel="faq" aria-label="常见问题"></section>
     </main>
 
   <script type="module" src="./src/app.js?v=20260609a"></script>
   <script type="module" src="./src/factors.js?v=20260625"></script>
+  <script type="module" src="./src/agent.js?v=20260629"></script>
   </body>
 </html>
