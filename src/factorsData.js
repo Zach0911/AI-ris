@@ -1,6 +1,6 @@
 export const factorsData = {
-  "updatedAt": "2026-07-01T20:30:15+08:00",
-  "date": "2026-07-01",
+  "updatedAt": "2026-07-02T10:11:32+08:00",
+  "date": "2026-07-02",
   "headline": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
   "verdict": {
     "light": "🟢",
@@ -15,32 +15,28 @@ export const factorsData = {
     "tnx": {
       "label": "^TNX",
       "name": "10 年期国债收益率",
-      "value": 4.38,
+      "value": 4.44,
       "unit": "%",
-      "date": "2026-06-29",
-      "direction": "down",
-      "directionText": "下行",
-      "delta": "近 20 日 -0.07pp · 52周 3.94–4.69%",
-      "meter": 59,
+      "date": "2026-06-30",
+      "direction": "flat",
+      "directionText": "横盘",
+      "delta": "近 20 日 -0.03pp · 52周 3.94–4.69%",
+      "meter": 63,
       "meterScale": [
         "3.5%",
         "4.0%",
         "4.5%",
         "5.0%"
       ],
-      "light": "strong",
+      "light": "neutral",
       "hint": "分母端 · 定估值贴现率。快速上行杀估值，回落解压成长股",
       "source": "FRED DGS10",
       "explain": {
         "definition": "美国 10 年期国债收益率，市场无风险利率基准，定估值贴现率（分母端）。",
-        "current": "当前 4.38%，近 20 日下行 -0.07pp。",
+        "current": "当前 4.44%，近 20 日横盘 -0.03pp。",
         "threshold": "52周区间 3.94–4.69%，预警线 4.7%（破位+EPS 未对冲即触发估值压缩预警）。"
       },
       "history": [
-        {
-          "date": "2026-05-15",
-          "value": 4.59
-        },
         {
           "date": "2026-05-18",
           "value": 4.61
@@ -156,6 +152,10 @@ export const factorsData = {
         {
           "date": "2026-06-29",
           "value": 4.38
+        },
+        {
+          "date": "2026-06-30",
+          "value": 4.44
         }
       ]
     },
@@ -365,7 +365,7 @@ export const factorsData = {
       "action": "维持 / 顺势仓位",
       "desc": "三因子同向偏多，主升延续",
       "active": true,
-      "reason": "为什么是【主升牛市】：下行（解压估值） + 扩张（盈利增长） + 加速（AI 景气上行） → 三因子同向偏多，主升逻辑延续"
+      "reason": "为什么是【主升牛市】：横盘（利率中性） + 扩张（盈利增长） + 加速（AI 景气上行） → 三因子同向偏多，主升逻辑延续"
     },
     {
       "tnx": "下行",
