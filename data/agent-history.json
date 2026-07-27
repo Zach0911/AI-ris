@@ -1,4 +1,29 @@
 {
-  "suggestions": [],
-  "updatedAt": "2026-07-24T22:34:39Z"
+  "suggestions": [
+    {
+      "id": "3e76a311631b",
+      "ticker": "QQQ",
+      "createdAt": "2026-07-27T22:34:03Z",
+      "issuedAtClose": "2026-07-27",
+      "direction": "short",
+      "horizon": "swing",
+      "entry": 682.12,
+      "stop": 710.76,
+      "target": 639.15,
+      "sizePct": 25.0,
+      "atr": 14.3217,
+      "confidence": 65,
+      "reasoning": "价格跌破EMA20/EMA60，RSI<40偏弱，-DI远大于+DI空头主导，MACD柱负值放大，ADX>20有弱趋势，放量下跌，短期空头结构明确，但趋势强度一般，按swing操作。",
+      "thought": "Thought: 当前指标快照显示几个关键信号：价格已跌破EMA20和EMA60，且偏离幅度分别为-3.33%和-2.48%，说明空头动能较强。RSI=38.6已进入偏弱区域（<40），但尚未超卖（<30），仍有下行空间。ADX=22.3略高于20，表明有弱趋势形成，且-DI=35.9远大于+DI=14.9，空头主导。MACD柱为-3.687，负值且放大中，空头动能持续。EMA20与EMA60虽为金叉状态，但价格已跌破两条均线，金叉失效，结构转为空头排列倾向。量比1.13显示放量下跌。综合来看，短期空头趋势明确，但ADX仅22.3，趋势强度一般，适合swing周期。由于这是首次运行，暂无历史胜率参考，信心度不宜过高，但信号一致性较强，可以给出short建议。",
+      "quality": "medium",
+      "qualityFlags": [],
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedPrice": null,
+      "resolution": null,
+      "daysOpen": 0,
+      "maxDays": 10
+    }
+  ],
+  "updatedAt": "2026-07-27T22:34:03Z"
 }
