@@ -1,48 +1,43 @@
 export const agentData = {
   "agent": {
     "ticker": "QQQ",
-    "lastRun": "2026-08-04T22:36:01Z",
+    "lastRun": "2026-08-05T22:34:35Z",
     "mode": "live",
-    "iterations": 2,
+    "iterations": 1,
     "error": null
   },
   "latestRun": {
-    "thought": "Thought: 复盘确认最近一次是short swing conf65→loss，说明我在多头结构下逆势做空失败。当前指标明确偏多：golden cross、价格在双均线上方、RSI=58.1健康、MACD柱为正、+DI>−DI。虽然ADX=24.9略低于25，趋势强度一般，但方向明确向上。上次逆势做空亏损的教训应让我顺势做多。\n\n不过价格已偏离EMA20达3.5%，短期有回踩风险，且ADX未达25，所以horizon定为swing而非trend，信心度适中（上次失败也提示我要谨慎）。我提交long建议。",
-    "action": "submit_suggestion(long, swing, conf=62)",
-    "observation": "建议已提交：long swing 信心度 62",
-    "asOfDate": "2026-08-04",
+    "thought": "Thought: 当前结构是 EMA20 在 EMA60 上方（golden cross），价格在两条均线上方，RSI 55.4 处于健康顺势区间，MACD 柱为正且数值不小，整体偏多头趋势。但 ADX 23.6 略低于 25，趋势强度不算特别强，更接近 swing 而非强 trend。当前有一条 open 的 long swing 建议在跟踪中（已持有 1/10 天），entry 723.85，当前价 717.30 略低于 entry，处于浮亏但未触及止损 691.72。量比 0.64 偏低，说明上涨动能伴随缩量，需留意。整体多头结构未破坏，open 建议仍在合理跟踪范围内，无需重复下单或改变方向。我维持对多头方向的判断，但考虑到 ADX 未过 25、量能不足，信心度保持中性偏谨慎。\n\n当前 open 建议仍在有效跟踪中，结构未破坏，我选择维持多头方向并提交一条覆盖建议以确认判断。",
+    "action": "submit_suggestion(long, swing, conf=58)",
+    "observation": "建议已提交：long swing 信心度 58",
+    "asOfDate": "2026-08-05",
     "indicators": {
-      "price": 723.8499755859375,
-      "date": "2026-08-04",
-      "ema20": 699.4003998184921,
-      "ema60": 697.6834022011776,
-      "ma20": 700.6019958496094,
-      "ma60": 713.9656778971354,
-      "ema20Pct": 3.495790933747034,
-      "ema60Pct": 3.7504938919579844,
+      "price": 717.2999877929688,
+      "date": "2026-08-05",
+      "ema20": 701.1051224828155,
+      "ema60": 698.3281989006238,
+      "ma20": 700.8949951171875,
+      "ma60": 714.0798573811849,
+      "ema20Pct": 2.309905432269921,
+      "ema60Pct": 2.716743921011955,
       "emaCross": "golden",
-      "rsi": 58.05877126279922,
-      "atr": 16.066960369788372,
-      "atrPct": 2.21965336902617,
-      "adx": 24.934013930189067,
-      "plusDi": 27.489596688647428,
-      "minusDi": 25.19721431561047,
-      "macd": -5.1453536272292695,
-      "macdSignal": -7.088249934865763,
-      "macdHist": 1.9428963076364933,
-      "volume": 58988820.0,
-      "volumeRatio": 1.059115900802287
+      "rsi": 55.42479021482186,
+      "atr": 15.749979861598515,
+      "atrPct": 2.195731232347987,
+      "adx": 23.63911285896074,
+      "plusDi": 27.350101570600895,
+      "minusDi": 23.8683043048328,
+      "macd": -3.085017692808492,
+      "macdSignal": -6.287603522887399,
+      "macdHist": 3.202585830078907,
+      "volume": 32662387.0,
+      "volumeRatio": 0.6411925833440463
     },
     "trace": [
       {
-        "thought": "Thought: 让我分析当前指标快照。价格723.85高于EMA20(699.40)和EMA60(697.68)，EMA20在EMA60之上形成golden cross，这是多头结构。价格相对EMA20+3.50%、相对EMA60+3.75%，处于顺势但略偏离均线。RSI=58.1在40-70顺势区间，不极端。ADX=24.9接近25但略低于，+DI(27.5)>-DI(25.2)，多头略占优但趋势强度一般。MACD柱=1.943为正，动能偏多。量比1.06正常。\n\n整体看是偏多结构，但ADX未达25，趋势强度不足，且价格已偏离EMA20达3.5%，追高风险存在。最近一次建议是short swing conf65→loss，说明我此前逆势做空失败，应该吸取教训顺势而为。\n\n不过ADX=24.9接近25但未达，horizon应定为swing。价格偏离均线较多，短期可能有回踩需求。综合看，多头结构明确但动能温和，可以顺势做多但信心度不宜过高。考虑到最近一次做空亏损，这次应顺应趋势方向。\n\n我决定submit一个long建议，swing周期，信心度适中。让我先复盘一下最近表现。",
-        "action": "get_recent_suggestions({'limit': 5})",
-        "observation": "- short swing conf65 → loss（2026-08-04）"
-      },
-      {
-        "thought": "Thought: 复盘确认最近一次是short swing conf65→loss，说明我在多头结构下逆势做空失败。当前指标明确偏多：golden cross、价格在双均线上方、RSI=58.1健康、MACD柱为正、+DI>−DI。虽然ADX=24.9略低于25，趋势强度一般，但方向明确向上。上次逆势做空亏损的教训应让我顺势做多。\n\n不过价格已偏离EMA20达3.5%，短期有回踩风险，且ADX未达25，所以horizon定为swing而非trend，信心度适中（上次失败也提示我要谨慎）。我提交long建议。",
-        "action": "submit_suggestion(long, swing, conf=62)",
-        "observation": "建议已提交：long swing 信心度 62"
+        "thought": "Thought: 当前结构是 EMA20 在 EMA60 上方（golden cross），价格在两条均线上方，RSI 55.4 处于健康顺势区间，MACD 柱为正且数值不小，整体偏多头趋势。但 ADX 23.6 略低于 25，趋势强度不算特别强，更接近 swing 而非强 trend。当前有一条 open 的 long swing 建议在跟踪中（已持有 1/10 天），entry 723.85，当前价 717.30 略低于 entry，处于浮亏但未触及止损 691.72。量比 0.64 偏低，说明上涨动能伴随缩量，需留意。整体多头结构未破坏，open 建议仍在合理跟踪范围内，无需重复下单或改变方向。我维持对多头方向的判断，但考虑到 ADX 未过 25、量能不足，信心度保持中性偏谨慎。\n\n当前 open 建议仍在有效跟踪中，结构未破坏，我选择维持多头方向并提交一条覆盖建议以确认判断。",
+        "action": "submit_suggestion(long, swing, conf=58)",
+        "observation": "建议已提交：long swing 信心度 58"
       }
     ]
   },
@@ -67,7 +62,7 @@ export const agentData = {
     "resolvedAt": null,
     "resolvedPrice": null,
     "resolution": null,
-    "daysOpen": 0,
+    "daysOpen": 1,
     "maxDays": 10
   },
   "winRate": {
@@ -136,7 +131,7 @@ export const agentData = {
       "resolvedAt": null,
       "resolvedPrice": null,
       "resolution": null,
-      "daysOpen": 0,
+      "daysOpen": 1,
       "maxDays": 10
     },
     {
