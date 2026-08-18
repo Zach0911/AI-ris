@@ -41,13 +41,13 @@
       "thought": "Thought: 复盘确认最近一次是short swing conf65→loss，说明我在多头结构下逆势做空失败。当前指标明确偏多：golden cross、价格在双均线上方、RSI=58.1健康、MACD柱为正、+DI>−DI。虽然ADX=24.9略低于25，趋势强度一般，但方向明确向上。上次逆势做空亏损的教训应让我顺势做多。\n\n不过价格已偏离EMA20达3.5%，短期有回踩风险，且ADX未达25，所以horizon定为swing而非trend，信心度适中（上次失败也提示我要谨慎）。我提交long建议。",
       "quality": "medium",
       "qualityFlags": [],
-      "status": "open",
-      "resolvedAt": null,
-      "resolvedPrice": null,
-      "resolution": null,
-      "daysOpen": 9,
+      "status": "expired",
+      "resolvedAt": "2026-08-18",
+      "resolvedPrice": 717.51,
+      "resolution": "expired",
+      "daysOpen": 10,
       "maxDays": 10
     }
   ],
-  "updatedAt": "2026-08-17T21:50:46Z"
+  "updatedAt": "2026-08-18T21:48:19Z"
 }
