@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-08-26T18:28:01+08:00",
-  "date": "2026-08-26",
+  "updatedAt": "2026-08-27T13:40:22+08:00",
+  "date": "2026-08-27",
   "headline": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
   "verdict": {
     "light": "🟢",
@@ -15,13 +15,13 @@
     "tnx": {
       "label": "^TNX",
       "name": "10 年期国债收益率",
-      "value": 4.7,
+      "value": 4.64,
       "unit": "%",
-      "date": "2026-08-24",
+      "date": "2026-08-25",
       "direction": "flat",
       "directionText": "横盘",
-      "delta": "近 20 日 +0.05pp · 52周 3.94–4.69%",
-      "meter": 80,
+      "delta": "近 20 日 +0.03pp · 52周 3.94–4.69%",
+      "meter": 76,
       "meterScale": [
         "3.5%",
         "4.0%",
@@ -33,14 +33,10 @@
       "source": "FRED DGS10",
       "explain": {
         "definition": "美国 10 年期国债收益率，市场无风险利率基准，定估值贴现率（分母端）。",
-        "current": "当前 4.7%，近 20 日横盘 +0.05pp。",
+        "current": "当前 4.64%，近 20 日横盘 +0.03pp。",
         "threshold": "52周区间 3.94–4.69%，预警线 4.7%（破位+EPS 未对冲即触发估值压缩预警）。"
       },
       "history": [
-        {
-          "date": "2026-07-14",
-          "value": 4.58
-        },
         {
           "date": "2026-07-15",
           "value": 4.55
@@ -156,20 +152,24 @@
         {
           "date": "2026-08-24",
           "value": 4.7
+        },
+        {
+          "date": "2026-08-25",
+          "value": 4.64
         }
       ]
     },
     "nvda": {
       "label": "NVDA",
       "name": "数据中心收入增速",
-      "value": 92,
+      "value": -46,
       "unit": "% YoY",
-      "asOf": "2026-04-26（FY27Q1）",
-      "note": "Data Center $75.2B · YoY +92% · QoQ +21%",
+      "asOf": "2026-07-26（FY27Q2）",
+      "note": "Data Center $89.0B · YoY -46% · QoQ +117%",
       "direction": "speed",
       "directionText": "加速",
-      "delta": "YoY +92% · QoQ +21% · 季度 $75.2B",
-      "meter": 92,
+      "delta": "YoY -46% · QoQ +117% · 季度 $89.0B",
+      "meter": 0,
       "meterScale": [
         "0",
         "30%",
@@ -181,10 +181,14 @@
       "source": "SEC EDGAR 10-Q",
       "explain": {
         "definition": "英伟达数据中心业务收入同比/环比增速，AI 景气与指数集中度的代理指标。",
-        "current": "当前 YoY +92%、QoQ +21%（2026-04-26（FY27Q1））。",
+        "current": "当前 YoY -46%、QoQ +117%（2026-07-26（FY27Q2））。",
         "threshold": "QoQ ≥5%=加速，0–5%=高位持平，≤0=减速；连续 2 季 QoQ 转负为顶部领先信号。"
       },
       "history": [
+        {
+          "date": "2026-07-26",
+          "value": -46
+        },
         {
           "date": "2026-04-26",
           "value": 92
@@ -204,10 +208,6 @@
         {
           "date": "2024-07-28",
           "value": -46
-        },
-        {
-          "date": "2023-10-29",
-          "value": -50
         }
       ]
     },
