@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-29T12:44:19+08:00",
+  "updatedAt": "2026-08-29T22:52:54+08:00",
   "marketDataSource": "finance-all-in-one primary; Nasdaq historical daily close fallback",
   "financeFallbacks": {
     "AAPL": "finance-all-in-one skipped or not installed",
