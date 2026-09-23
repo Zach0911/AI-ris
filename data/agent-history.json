@@ -47,7 +47,33 @@
       "resolution": "expired",
       "daysOpen": 10,
       "maxDays": 10
+    },
+    {
+      "id": "285d2149d484",
+      "ticker": "QQQ",
+      "createdAt": "2026-09-23T23:52:06Z",
+      "issuedAtClose": "2026-09-23",
+      "direction": "long",
+      "horizon": "swing",
+      "entry": 741.21,
+      "stop": 721.27,
+      "target": 771.12,
+      "sizePct": 25.0,
+      "atr": 9.9687,
+      "confidence": 55,
+      "reasoning": "EMA20>EMA60 金叉、MACD柱为正、+DI 压制 -DI，结构偏多；但 ADX 仅 13.1 趋势弱、RSI 63.5 偏热且价格偏离 EMA20 近 3%，故仅给中等偏低信心的顺势多单。",
+      "thought": "Thought: 当前结构偏多：EMA20 在 EMA60 上方且为 golden 交叉，价格站上两条均线（+2.85% / +4.13%），MACD 柱为正 3.585，+DI 35.9 明显高于 -DI 21.6，方向偏多。但两个关键瑕疵：ADX 仅 13.1，说明趋势强度很弱、更像震荡而非成型趋势；RSI 63.5 已接近偏热区，且价格偏离 EMA20 近 3%，短线追多性价比不高。量比 0.80 显示上攻缺乏量能配合。历史样本不足且最近一笔 short 亏损，不宜高信心。综合看，方向偏多但趋势强度不足，属于弱趋势中的顺势回踩机会而非追高，我倾向给一个低信心的 swing 多单，等回踩 EMA20 附近更佳，但当前结构仍支持持有偏多。",
+      "quality": "medium",
+      "qualityFlags": [
+        "choppy_adx_low"
+      ],
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedPrice": null,
+      "resolution": null,
+      "daysOpen": 0,
+      "maxDays": 10
     }
   ],
-  "updatedAt": "2026-09-22T23:42:57Z"
+  "updatedAt": "2026-09-23T23:52:07Z"
 }
