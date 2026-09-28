@@ -1,6 +1,6 @@
 export const factorsData = {
-  "updatedAt": "2026-09-26T22:00:28+08:00",
-  "date": "2026-09-26",
+  "updatedAt": "2026-09-28T10:29:58+08:00",
+  "date": "2026-09-28",
   "headline": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
   "verdict": {
     "light": "🟡",
