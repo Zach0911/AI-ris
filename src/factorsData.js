@@ -1,5 +1,5 @@
 export const factorsData = {
-  "updatedAt": "2026-10-03T00:03:46+08:00",
+  "updatedAt": "2026-10-03T10:51:18+08:00",
   "date": "2026-10-03",
   "headline": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
   "verdict": {
@@ -15,12 +15,12 @@ export const factorsData = {
     "tnx": {
       "label": "^TNX",
       "name": "10 年期国债收益率",
-      "value": 5.29,
+      "value": 5.24,
       "unit": "%",
-      "date": "2026-09-30",
+      "date": "2026-10-01",
       "direction": "up",
       "directionText": "上行",
-      "delta": "近 20 日 +0.5pp · 52周 3.94–4.69%",
+      "delta": "近 20 日 +0.45pp · 52周 3.94–4.69%",
       "meter": 100,
       "meterScale": [
         "3.5%",
@@ -33,14 +33,10 @@ export const factorsData = {
       "source": "FRED DGS10",
       "explain": {
         "definition": "美国 10 年期国债收益率，市场无风险利率基准，定估值贴现率（分母端）。",
-        "current": "当前 5.29%，近 20 日上行 +0.5pp。",
+        "current": "当前 5.24%，近 20 日上行 +0.45pp。",
         "threshold": "52周区间 3.94–4.69%，预警线 4.7%（破位+EPS 未对冲即触发估值压缩预警）。"
       },
       "history": [
-        {
-          "date": "2026-08-19",
-          "value": 4.65
-        },
         {
           "date": "2026-08-20",
           "value": 4.69
@@ -156,6 +152,10 @@ export const factorsData = {
         {
           "date": "2026-09-30",
           "value": 5.29
+        },
+        {
+          "date": "2026-10-01",
+          "value": 5.24
         }
       ]
     },
