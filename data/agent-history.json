@@ -73,7 +73,33 @@
       "resolution": "expired",
       "daysOpen": 10,
       "maxDays": 10
+    },
+    {
+      "id": "70f81d9c84b1",
+      "ticker": "QQQ",
+      "createdAt": "2026-10-10T01:06:49Z",
+      "issuedAtClose": "2026-10-09",
+      "direction": "long",
+      "horizon": "swing",
+      "entry": 747.58,
+      "stop": 728.63,
+      "target": 776.0,
+      "sizePct": 25.0,
+      "atr": 9.4733,
+      "confidence": 55,
+      "reasoning": "EMA20>EMA60 金叉、价格站上双均线且 MACD 柱为正，RSI59 顺势不极端，偏多；但 ADX15.4 趋势强度弱，故仅给中等偏低信心、swing 周期。",
+      "thought": "Thought: 当前结构偏多：EMA20 在 EMA60 上方且为 golden 交叉，价格站在两条均线之上（+1.14% / +3.44%），MACD 柱为正 1.342，RSI 59 处于顺势区间且不极端，量比 1.54 有温和放量。唯一的问题是 ADX 仅 15.4，说明趋势强度不足，属于弱趋势/震荡偏多格局，+DI 31 略高于 -DI 27.9 但差距不大，方向性并不牢固。历史样本不足且最近一条 short 已亏损，说明追空不可取；但 ADX 偏低意味着突破持续性存疑，不宜给高信心。综合看，顺势偏多但强度弱，适合以 swing 周期轻仓做多，信心度中等偏低。",
+      "quality": "medium",
+      "qualityFlags": [
+        "choppy_adx_low"
+      ],
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedPrice": null,
+      "resolution": null,
+      "daysOpen": 0,
+      "maxDays": 10
     }
   ],
-  "updatedAt": "2026-10-09T01:19:48Z"
+  "updatedAt": "2026-10-10T01:06:49Z"
 }
