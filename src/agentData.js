@@ -1,86 +1,66 @@
 export const agentData = {
   "agent": {
     "ticker": "QQQ",
-    "lastRun": "2026-10-15T00:00:30Z",
+    "lastRun": "2026-10-15T23:45:07Z",
     "mode": "live",
     "iterations": 1,
     "error": null
   },
   "latestRun": {
-    "thought": "Thought: 当前结构偏多但动能不足。EMA20 在 EMA60 上方且金叉，价格站上两条均线，中期趋势仍向上；但 ADX 仅 13.2，说明趋势强度很弱，属于震荡格局。更关键的是 -DI(31.4) 高于 +DI(26.5)，短线空头动能占优，MACD 柱为负(-0.655)，RSI 54.7 中性无方向。量比 0.96 缩量。综合看，多头结构未破但缺乏上攻动能，且短线指标偏空，属于信号矛盾。\n\n已有一条 open 的 long swing 建议（entry 747.58，现价 743.57 已浮亏），持有 2/10 天。历史胜率样本不足，且最近一条 short 出现亏损，说明当前震荡市里追方向容易被反复打脸。此时不宜重复下单或反向加仓，最优选择是维持观察、不新增建议。\n\n结论：HOLD，等待 ADX 回升或 MACD 柱转正、+DI 上穿 -DI 再确认方向。\n\nHOLD。理由：EMA 金叉多头结构尚在，但 ADX=13.2 无趋势、-DI>+DI 且 MACD 柱为负，短线动能偏空，信号矛盾；已有 open long 建议在跟踪，浮亏中，不宜重复下单或反向操作，等待趋势强度确认。",
+    "thought": "Thought: 当前结构偏空且趋势尚未成型。价格 728 跌破 EMA20（738.83，-1.47%），虽仍在 EMA60 上方（+0.38%），但 EMA20/EMA60 虽为 golden 交叉，价格已先行走弱。ADX=15.3 低于 20，说明无有效趋势，属震荡市；-DI=41.0 远高于 +DI=20.7，空头动能占优。RSI=44.2 偏弱但未超卖，MACD 柱 -3.015 为负，动能向下。量比 1.39 显示抛压有量。综合看，趋势跟踪条件不满足（ADX 不足、EMA60 支撑尚在但价格已破 EMA20），方向偏空但缺乏趋势确认，且我近期已结算建议全部为 loss/expired，胜率无支撑。此时不宜强行下单，选择 HOLD 观望，等待 ADX 回升或价格明确跌破 EMA60 再行动。\n\nHOLD：ADX=15.3 无趋势、价格跌破 EMA20 但守住 EMA60，信号矛盾且历史表现不佳，暂不出建议，等待趋势确认。",
     "action": "HOLD（观望）",
     "observation": "Agent 未提交建议，选择观望",
-    "asOfDate": "2026-10-13",
+    "asOfDate": "2026-10-15",
     "indicators": {
-      "price": 743.5700073242188,
-      "date": "2026-10-13",
-      "ema20": 741.1252096566324,
-      "ema60": 724.9956077492159,
-      "ma20": 741.2244598388672,
-      "ma60": 719.6234161376954,
-      "ema20Pct": 0.32987646833915196,
-      "ema60Pct": 2.562001669591907,
+      "price": 728.0,
+      "date": "2026-10-15",
+      "ema20": 738.8260797084441,
+      "ema60": 725.2189987777756,
+      "ma20": 743.0639556884765,
+      "ma60": 720.3584543863932,
+      "ema20Pct": -1.465308278332067,
+      "ema60Pct": 0.3834705415759032,
       "emaCross": "golden",
-      "rsi": 54.7377758178351,
-      "atr": 8.851504335422906,
-      "atrPct": 1.1904063165855188,
-      "adx": 13.216118162633324,
-      "plusDi": 26.545779742190412,
-      "minusDi": 31.43720027323055,
-      "macd": 8.112547015668724,
-      "macdSignal": 8.768007617795806,
-      "macdHist": -0.6554606021270821,
-      "volume": 28738600.0,
-      "volumeRatio": 0.9566077051614063
+      "rsi": 44.23390078494906,
+      "atr": 9.771296290787657,
+      "atrPct": 1.3422110289543483,
+      "adx": 15.254800913157952,
+      "plusDi": 20.73437846731753,
+      "minusDi": 41.00727400988471,
+      "macd": 4.477318374473498,
+      "macdSignal": 7.491963335807997,
+      "macdHist": -3.0146449613344988,
+      "volume": 49058351.0,
+      "volumeRatio": 1.3898317533697653
     },
     "trace": [
       {
-        "thought": "Thought: 当前结构偏多但动能不足。EMA20 在 EMA60 上方且金叉，价格站上两条均线，中期趋势仍向上；但 ADX 仅 13.2，说明趋势强度很弱，属于震荡格局。更关键的是 -DI(31.4) 高于 +DI(26.5)，短线空头动能占优，MACD 柱为负(-0.655)，RSI 54.7 中性无方向。量比 0.96 缩量。综合看，多头结构未破但缺乏上攻动能，且短线指标偏空，属于信号矛盾。\n\n已有一条 open 的 long swing 建议（entry 747.58，现价 743.57 已浮亏），持有 2/10 天。历史胜率样本不足，且最近一条 short 出现亏损，说明当前震荡市里追方向容易被反复打脸。此时不宜重复下单或反向加仓，最优选择是维持观察、不新增建议。\n\n结论：HOLD，等待 ADX 回升或 MACD 柱转正、+DI 上穿 -DI 再确认方向。\n\nHOLD。理由：EMA 金叉多头结构尚在，但 ADX=13.2 无趋势、-DI>+DI 且 MACD 柱为负，短线动能偏空，信号矛盾；已有 open long 建议在跟踪，浮亏中，不宜重复下单或反向操作，等待趋势强度确认。",
+        "thought": "Thought: 当前结构偏空且趋势尚未成型。价格 728 跌破 EMA20（738.83，-1.47%），虽仍在 EMA60 上方（+0.38%），但 EMA20/EMA60 虽为 golden 交叉，价格已先行走弱。ADX=15.3 低于 20，说明无有效趋势，属震荡市；-DI=41.0 远高于 +DI=20.7，空头动能占优。RSI=44.2 偏弱但未超卖，MACD 柱 -3.015 为负，动能向下。量比 1.39 显示抛压有量。综合看，趋势跟踪条件不满足（ADX 不足、EMA60 支撑尚在但价格已破 EMA20），方向偏空但缺乏趋势确认，且我近期已结算建议全部为 loss/expired，胜率无支撑。此时不宜强行下单，选择 HOLD 观望，等待 ADX 回升或价格明确跌破 EMA60 再行动。\n\nHOLD：ADX=15.3 无趋势、价格跌破 EMA20 但守住 EMA60，信号矛盾且历史表现不佳，暂不出建议，等待趋势确认。",
         "action": "HOLD（观望）",
         "observation": "Agent 未提交建议，选择观望"
       }
     ]
   },
-  "currentSuggestion": {
-    "id": "70f81d9c84b1",
-    "ticker": "QQQ",
-    "createdAt": "2026-10-10T01:06:49Z",
-    "issuedAtClose": "2026-10-09",
-    "direction": "long",
-    "horizon": "swing",
-    "entry": 747.58,
-    "stop": 728.63,
-    "target": 776.0,
-    "sizePct": 25.0,
-    "atr": 9.4733,
-    "confidence": 55,
-    "reasoning": "EMA20>EMA60 金叉、价格站上双均线且 MACD 柱为正，RSI59 顺势不极端，偏多；但 ADX15.4 趋势强度弱，故仅给中等偏低信心、swing 周期。",
-    "thought": "Thought: 当前结构偏多：EMA20 在 EMA60 上方且为 golden 交叉，价格站在两条均线之上（+1.14% / +3.44%），MACD 柱为正 1.342，RSI 59 处于顺势区间且不极端，量比 1.54 有温和放量。唯一的问题是 ADX 仅 15.4，说明趋势强度不足，属于弱趋势/震荡偏多格局，+DI 31 略高于 -DI 27.9 但差距不大，方向性并不牢固。历史样本不足且最近一条 short 已亏损，说明追空不可取；但 ADX 偏低意味着突破持续性存疑，不宜给高信心。综合看，顺势偏多但强度弱，适合以 swing 周期轻仓做多，信心度中等偏低。",
-    "quality": "medium",
-    "qualityFlags": [
-      "choppy_adx_low"
-    ],
-    "status": "open",
-    "resolvedAt": null,
-    "resolvedPrice": null,
-    "resolution": null,
-    "daysOpen": 2,
-    "maxDays": 10
-  },
+  "currentSuggestion": null,
   "winRate": {
-    "total": 3,
+    "total": 4,
     "wins": 0,
-    "losses": 1,
+    "losses": 2,
     "expired": 2,
-    "decided": 1,
+    "decided": 2,
     "winRate": null,
     "recent10": {
       "winRate": 0.0,
-      "count": 3,
+      "count": 4,
       "wins": 0
     },
     "byDirection": {
       "short": {
+        "wins": 0,
+        "losses": 1,
+        "winRate": 0.0
+      },
+      "long": {
         "wins": 0,
         "losses": 1,
         "winRate": 0.0
@@ -89,7 +69,7 @@ export const agentData = {
     "byHorizon": {
       "swing": {
         "wins": 0,
-        "losses": 1,
+        "losses": 2,
         "winRate": 0.0
       }
     },
@@ -101,7 +81,7 @@ export const agentData = {
       },
       "mid": {
         "wins": 0,
-        "losses": 1,
+        "losses": 2,
         "winRate": 0.0
       },
       "high": {
@@ -131,11 +111,11 @@ export const agentData = {
       "qualityFlags": [
         "choppy_adx_low"
       ],
-      "status": "open",
-      "resolvedAt": null,
-      "resolvedPrice": null,
-      "resolution": null,
-      "daysOpen": 2,
+      "status": "loss",
+      "resolvedAt": "2026-10-15",
+      "resolvedPrice": 728.0,
+      "resolution": "loss",
+      "daysOpen": 4,
       "maxDays": 10
     },
     {

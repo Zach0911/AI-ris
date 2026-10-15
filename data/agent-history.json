@@ -93,13 +93,13 @@
       "qualityFlags": [
         "choppy_adx_low"
       ],
-      "status": "open",
-      "resolvedAt": null,
-      "resolvedPrice": null,
-      "resolution": null,
-      "daysOpen": 2,
+      "status": "loss",
+      "resolvedAt": "2026-10-15",
+      "resolvedPrice": 728.0,
+      "resolution": "loss",
+      "daysOpen": 4,
       "maxDays": 10
     }
   ],
-  "updatedAt": "2026-10-15T00:00:30Z"
+  "updatedAt": "2026-10-15T23:45:07Z"
 }
