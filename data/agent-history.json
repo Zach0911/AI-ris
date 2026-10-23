@@ -99,7 +99,33 @@
       "resolution": "loss",
       "daysOpen": 4,
       "maxDays": 10
+    },
+    {
+      "id": "628ad5c543e2",
+      "ticker": "QQQ",
+      "createdAt": "2026-10-23T00:04:45Z",
+      "issuedAtClose": "2026-10-22",
+      "direction": "short",
+      "horizon": "swing",
+      "entry": 725.2,
+      "stop": 747.04,
+      "target": 692.45,
+      "sizePct": 25.0,
+      "atr": 10.9176,
+      "confidence": 42,
+      "reasoning": "价格失守EMA20且MACD柱转负，-DI(35.3)远超+DI(17.2)方向翻空，但ADX仅21.4趋势弱、量比0.75缩量、EMA20仍在EMA60上方，多头结构未破，故仅给低信心短空。",
+      "thought": "Thought: 结构上偏空信号占优。价格跌破 EMA20（-0.94%），MACD 柱为负（-4.294）且动能走弱；更关键的是 -DI=35.3 明显高于 +DI=17.2，方向性指标已翻空，而 ADX=21.4 只是刚过 20 的弱趋势区，说明下跌尚未形成强趋势但方向明确。RSI=46.1 处于中性偏弱，未到超卖，仍有下行空间。EMA20 仍在 EMA60 上方（golden），价格也勉强站在 EMA60 之上（+0.12%），这是唯一的多头支撑，但已岌岌可危。量比 0.75 显示缩量，下跌缺乏放量确认，追空性价比一般。历史胜率样本不足，且最近四条建议三亏一平，说明当前震荡环境下我的方向判断可靠性偏低，应压低信心度。综合看：短线偏空但趋势强度不足、多头结构未完全破坏，属于方向不明朗的矛盾区，不宜重仓押注。倾向轻仓短空或直接观望。考虑到 -DI 大幅领先、MACD 转负、价格失守 EMA20，我选择给一条低信心的 swing 空单，同时明确这是弱信号。",
+      "quality": "medium",
+      "qualityFlags": [
+        "low_confidence"
+      ],
+      "status": "open",
+      "resolvedAt": null,
+      "resolvedPrice": null,
+      "resolution": null,
+      "daysOpen": 0,
+      "maxDays": 10
     }
   ],
-  "updatedAt": "2026-10-22T00:06:09Z"
+  "updatedAt": "2026-10-23T00:04:45Z"
 }
