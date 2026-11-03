@@ -119,13 +119,37 @@
       "qualityFlags": [
         "low_confidence"
       ],
+      "status": "win",
+      "resolvedAt": "2026-10-30",
+      "resolvedPrice": 690.49,
+      "resolution": "win",
+      "daysOpen": 6,
+      "maxDays": 10
+    },
+    {
+      "id": "7ca0c64c51f0",
+      "ticker": "QQQ",
+      "createdAt": "2026-11-03T02:59:55Z",
+      "issuedAtClose": "2026-11-02",
+      "direction": "short",
+      "horizon": "trend",
+      "entry": 681.09,
+      "stop": 707.44,
+      "target": 641.57,
+      "sizePct": 25.0,
+      "atr": 13.1747,
+      "confidence": 55,
+      "reasoning": "EMA20 下穿 EMA60 形成死叉、价格低于两均线 5%，ADX 28.7 且 -DI 42.1 主导、MACD 柱为负，空头趋势明确；仅因 RSI 32 接近超卖而压低信心度至 55，顺势做空。",
+      "thought": "Thought: 当前结构是明确的空头趋势：EMA20 在 EMA60 下方（death cross），价格同时跌破两条均线约 5%，ADX 28.7 且 -DI 42.1 远高于 +DI 14.6，方向性很强，MACD 柱为负且量比 1.14 显示下跌有量配合。唯一顾虑是 RSI 32.1 已接近超卖区，短期存在技术性反抽风险，追空的入场位置不佳。但趋势跟踪的原则是顺势不逆势，且 ADX>=25、EMA60 向下同向，属于 trend 周期。历史样本不足且最近几条 long 全部 loss/expired、short 一胜一负，说明我在震荡反抽中容易被扫，因此信心度不宜过高，给中等偏下。方向选择 short，周期 trend，信心度 55，止损止盈由系统按 ATR 计算。",
+      "quality": "medium",
+      "qualityFlags": [],
       "status": "open",
       "resolvedAt": null,
       "resolvedPrice": null,
       "resolution": null,
-      "daysOpen": 5,
-      "maxDays": 10
+      "daysOpen": 0,
+      "maxDays": 20
     }
   ],
-  "updatedAt": "2026-10-31T00:57:03Z"
+  "updatedAt": "2026-11-03T02:59:55Z"
 }
