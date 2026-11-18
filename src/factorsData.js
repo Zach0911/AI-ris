@@ -1,26 +1,26 @@
 export const factorsData = {
-  "updatedAt": "2026-11-18T02:54:29+08:00",
+  "updatedAt": "2026-11-18T13:03:18+08:00",
   "date": "2026-11-18",
   "headline": "EPS 决定牛熊 · TNX 决定估值弹性 · NVDA 决定指数弹性",
   "verdict": {
-    "light": "🟡",
-    "title": "震荡偏强",
-    "state": "震荡偏强",
-    "tone": "chop",
-    "action": "持仓观望",
-    "confidence": 55,
-    "desc": "盈利扛住估值压力，但利率上行或 AI 持平抑制弹性，结构性机会为主"
+    "light": "🟢",
+    "title": "主升牛市",
+    "state": "主升牛市",
+    "tone": "bull",
+    "action": "维持 / 顺势仓位",
+    "confidence": 85,
+    "desc": "盈利同比扩张 + AI 景气加速 + 利率未压制，三因子同向偏多，主升逻辑延续"
   },
   "indicators": {
     "tnx": {
       "label": "^TNX",
       "name": "10 年期国债收益率",
-      "value": 5.15,
+      "value": 5.12,
       "unit": "%",
-      "date": "2026-11-13",
-      "direction": "up",
-      "directionText": "上行",
-      "delta": "近 20 日 +0.05pp · 52周 3.94–4.69%",
+      "date": "2026-11-16",
+      "direction": "flat",
+      "directionText": "横盘",
+      "delta": "近 20 日 +0.03pp · 52周 3.94–4.69%",
       "meter": 100,
       "meterScale": [
         "3.5%",
@@ -28,19 +28,15 @@ export const factorsData = {
         "4.5%",
         "5.0%"
       ],
-      "light": "warn",
+      "light": "neutral",
       "hint": "分母端 · 定估值贴现率。快速上行杀估值，回落解压成长股",
       "source": "FRED DGS10",
       "explain": {
         "definition": "美国 10 年期国债收益率，市场无风险利率基准，定估值贴现率（分母端）。",
-        "current": "当前 5.15%，近 20 日上行 +0.05pp。",
+        "current": "当前 5.12%，近 20 日横盘 +0.03pp。",
         "threshold": "52周区间 3.94–4.69%，预警线 4.7%（破位+EPS 未对冲即触发估值压缩预警）。"
       },
       "history": [
-        {
-          "date": "2026-10-01",
-          "value": 5.24
-        },
         {
           "date": "2026-10-02",
           "value": 5.28
@@ -156,6 +152,10 @@ export const factorsData = {
         {
           "date": "2026-11-13",
           "value": 5.15
+        },
+        {
+          "date": "2026-11-16",
+          "value": 5.12
         }
       ]
     },
@@ -364,7 +364,8 @@ export const factorsData = {
       "tone": "bull",
       "action": "维持 / 顺势仓位",
       "desc": "三因子同向偏多，主升延续",
-      "active": false
+      "active": true,
+      "reason": "为什么是【主升牛市】：横盘（利率中性） + 扩张（盈利增长） + 加速（AI 景气上行） → 三因子同向偏多，主升逻辑延续"
     },
     {
       "tnx": "下行",
@@ -390,8 +391,7 @@ export const factorsData = {
       "tone": "chop",
       "action": "持仓观望",
       "desc": "盈利强但估值承压，结构机会",
-      "active": true,
-      "reason": "为什么是【震荡偏强】：上行（压制估值） + 扩张（盈利增长） + 加速（AI 景气上行） → 盈利扛住估值压力，结构性机会为主"
+      "active": false
     },
     {
       "tnx": "上行",
