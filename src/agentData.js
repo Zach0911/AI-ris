@@ -1,43 +1,48 @@
 export const agentData = {
   "agent": {
     "ticker": "QQQ",
-    "lastRun": "2026-11-18T03:03:11Z",
+    "lastRun": "2026-11-19T02:43:37Z",
     "mode": "live",
-    "iterations": 1,
+    "iterations": 2,
     "error": null
   },
   "latestRun": {
-    "thought": "Thought: 当前结构是明确的空头趋势：EMA20 在 EMA60 下方（death cross），价格同时低于两条均线 4.46% 和 6.92%，ADX=30.8 且 -DI=39.3 远高于 +DI=17.6，说明下跌趋势有强度而非震荡。RSI=36.5 偏弱但尚未到极端超卖，MACD 柱为负，动能仍向下。已有 open 的 short trend 建议（entry 681.09，已持有 11/20 天，浮盈明显），方向与当前结构一致，无需反向。唯一顾虑是价格已偏离 EMA20 较多、RSI 接近超卖区，追空性价比下降，但趋势跟踪逻辑下顺势持有更合理。历史样本不足，胜率不可靠，信心度不宜过高。综合判断：维持空头方向，信心度中等偏上，ADX>25 且 EMA60 向下同向，周期定为 trend。",
-    "action": "submit_suggestion(short, trend, conf=60)",
-    "observation": "建议已提交：short trend 信心度 60",
-    "asOfDate": "2026-11-17",
+    "thought": "Thought: 复盘确认：近期唯一已结算的方向性胜利是 short swing（conf42→win），两次 long swing 均未获利（一亏两过期），说明在下跌结构中做多是被反复证伪的方向，而顺势做空是有效的。当前 open 的 short trend 已持有 12/20 天且方向与指标完全一致，没有理由平掉或反向。指标上 ADX=31.3、-DI 主导、MACD 柱为负、价格在双均线下方，趋势跟踪信号完整；唯一瑕疵是 RSI=37.7 偏低、价格偏离 EMA20 达 3.71%，短线有技术性反抽风险，因此不宜在此位置追加新仓或提高信心度。结论：维持现有空头持仓，本轮不提交新建议，HOLD。\n\n本轮判断：HOLD。理由：空头趋势结构完好（death cross、ADX 31.3、-DI 37.6 主导、MACD 柱负），已有 short trend 建议在跟踪且浮盈，方向一致无需覆盖；但 RSI 37.7 偏低、价格偏离 EMA20 逾 3.7%，短线反抽风险上升，此时加仓或新开空性价比不足。继续持有原仓，等待趋势延续至目标 641.57 或触发止损 707.44。",
+    "action": "HOLD（观望）",
+    "observation": "Agent 未提交建议，选择观望",
+    "asOfDate": "2026-11-18",
     "indicators": {
-      "price": 656.9500122070312,
-      "date": "2026-11-17",
-      "ema20": 687.6320200459122,
-      "ema60": 705.8000141415381,
-      "ma20": 689.5840026855469,
-      "ma60": 715.160487874349,
-      "ema20Pct": -4.461980673446875,
-      "ema60Pct": -6.921224278228855,
+      "price": 659.510009765625,
+      "date": "2026-11-18",
+      "ema20": 684.9537333525953,
+      "ema60": 704.283132212934,
+      "ma20": 686.2995025634766,
+      "ma60": 714.3193186442057,
+      "ema20Pct": -3.7146631002991537,
+      "ema60Pct": -6.357261788540491,
       "emaCross": "death",
-      "rsi": 36.54605285817192,
-      "atr": 16.571493119617163,
-      "atrPct": 2.5224892018716973,
-      "adx": 30.822168642062323,
-      "plusDi": 17.606038213035898,
-      "minusDi": 39.31051306231528,
-      "macd": -14.831057960848852,
-      "macdSignal": -13.362706963533876,
-      "macdHist": -1.4683509973149764,
-      "volume": 55054900.0,
-      "volumeRatio": 1.2354020118318765
+      "rsi": 37.70878653843034,
+      "atr": 16.08424361605885,
+      "atrPct": 2.4388172094271665,
+      "adx": 31.344432145207314,
+      "plusDi": 16.8437177292267,
+      "minusDi": 37.60841470421963,
+      "macd": -15.22736440711492,
+      "macdSignal": -13.735638470617108,
+      "macdHist": -1.4917259364978115,
+      "volume": 44423300.0,
+      "volumeRatio": 0.9959836278015284
     },
     "trace": [
       {
-        "thought": "Thought: 当前结构是明确的空头趋势：EMA20 在 EMA60 下方（death cross），价格同时低于两条均线 4.46% 和 6.92%，ADX=30.8 且 -DI=39.3 远高于 +DI=17.6，说明下跌趋势有强度而非震荡。RSI=36.5 偏弱但尚未到极端超卖，MACD 柱为负，动能仍向下。已有 open 的 short trend 建议（entry 681.09，已持有 11/20 天，浮盈明显），方向与当前结构一致，无需反向。唯一顾虑是价格已偏离 EMA20 较多、RSI 接近超卖区，追空性价比下降，但趋势跟踪逻辑下顺势持有更合理。历史样本不足，胜率不可靠，信心度不宜过高。综合判断：维持空头方向，信心度中等偏上，ADX>25 且 EMA60 向下同向，周期定为 trend。",
-        "action": "submit_suggestion(short, trend, conf=60)",
-        "observation": "建议已提交：short trend 信心度 60"
+        "thought": "Thought: 当前结构是明确的空头趋势：EMA20 在 EMA60 下方（death cross），价格同时跌破两条均线（-3.71% / -6.36%），ADX=31.3 且 -DI=37.6 远高于 +DI=16.8，方向性很强，MACD 柱为负。RSI=37.7 偏弱但尚未进入超卖极端区，说明下跌仍有空间但已不算追空的最佳位置。已有 open short trend 建议（entry 681.09，已持有 12/20 天，浮盈明显），趋势方向与我的判断一致，无需反向覆盖，优先继续持有让趋势跑完。考虑到 RSI 偏低、价格偏离 EMA20 已超 3.7%，此处加仓性价比不高，因此不新开建议，维持现有空头跟踪。horizon 上 ADX>25 且 EMA60 向下，属 trend。\n\n本轮结论：HOLD（维持现有 short trend 持仓，不新增建议）。",
+        "action": "get_recent_suggestions({'limit': 5})",
+        "observation": "- short trend conf55 → open（None）\n- short swing conf42 → win（2026-10-30）\n- long swing conf55 → loss（2026-10-15）\n- long swing conf55 → expired（2026-10-07）\n- long swing conf62 → expired（2026-08-18）"
+      },
+      {
+        "thought": "Thought: 复盘确认：近期唯一已结算的方向性胜利是 short swing（conf42→win），两次 long swing 均未获利（一亏两过期），说明在下跌结构中做多是被反复证伪的方向，而顺势做空是有效的。当前 open 的 short trend 已持有 12/20 天且方向与指标完全一致，没有理由平掉或反向。指标上 ADX=31.3、-DI 主导、MACD 柱为负、价格在双均线下方，趋势跟踪信号完整；唯一瑕疵是 RSI=37.7 偏低、价格偏离 EMA20 达 3.71%，短线有技术性反抽风险，因此不宜在此位置追加新仓或提高信心度。结论：维持现有空头持仓，本轮不提交新建议，HOLD。\n\n本轮判断：HOLD。理由：空头趋势结构完好（death cross、ADX 31.3、-DI 37.6 主导、MACD 柱负），已有 short trend 建议在跟踪且浮盈，方向一致无需覆盖；但 RSI 37.7 偏低、价格偏离 EMA20 逾 3.7%，短线反抽风险上升，此时加仓或新开空性价比不足。继续持有原仓，等待趋势延续至目标 641.57 或触发止损 707.44。",
+        "action": "HOLD（观望）",
+        "observation": "Agent 未提交建议，选择观望"
       }
     ]
   },
@@ -62,7 +67,7 @@ export const agentData = {
     "resolvedAt": null,
     "resolvedPrice": null,
     "resolution": null,
-    "daysOpen": 11,
+    "daysOpen": 12,
     "maxDays": 20
   },
   "winRate": {
@@ -136,7 +141,7 @@ export const agentData = {
       "resolvedAt": null,
       "resolvedPrice": null,
       "resolution": null,
-      "daysOpen": 11,
+      "daysOpen": 12,
       "maxDays": 20
     },
     {
