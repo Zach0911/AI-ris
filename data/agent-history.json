@@ -143,13 +143,39 @@
       "thought": "Thought: 当前结构是明确的空头趋势：EMA20 在 EMA60 下方（death cross），价格同时跌破两条均线约 5%，ADX 28.7 且 -DI 42.1 远高于 +DI 14.6，方向性很强，MACD 柱为负且量比 1.14 显示下跌有量配合。唯一顾虑是 RSI 32.1 已接近超卖区，短期存在技术性反抽风险，追空的入场位置不佳。但趋势跟踪的原则是顺势不逆势，且 ADX>=25、EMA60 向下同向，属于 trend 周期。历史样本不足且最近几条 long 全部 loss/expired、short 一胜一负，说明我在震荡反抽中容易被扫，因此信心度不宜过高，给中等偏下。方向选择 short，周期 trend，信心度 55，止损止盈由系统按 ATR 计算。",
       "quality": "medium",
       "qualityFlags": [],
+      "status": "win",
+      "resolvedAt": "2026-11-20",
+      "resolvedPrice": 608.45,
+      "resolution": "win",
+      "daysOpen": 14,
+      "maxDays": 20
+    },
+    {
+      "id": "dfc1587c50e4",
+      "ticker": "QQQ",
+      "createdAt": "2026-11-21T02:40:52Z",
+      "issuedAtClose": "2026-11-20",
+      "direction": "short",
+      "horizon": "trend",
+      "entry": 608.45,
+      "stop": 646.0,
+      "target": 552.13,
+      "sizePct": 25.0,
+      "atr": 18.7731,
+      "confidence": 50,
+      "reasoning": "空头排列+ADX31.6且-DI主导、MACD柱负，趋势向下；但RSI26.6超卖、放量下跌，追空需防反抽，故信心度中等偏低。",
+      "thought": "Thought: 当前结构是明确的空头趋势：EMA20 在 EMA60 下方（death cross），价格跌破 EMA20 达 9.76%、跌破 EMA60 达 12.99%，ADX=31.6 且 -DI=42.3 远高于 +DI=17.3，说明下跌趋势强劲且有方向性。MACD 柱为 -4.775，动能仍向下。唯一的问题是 RSI=26.6 已进入超卖区，且量比 1.92 显示放量下跌，短期存在技术性反抽风险，追空的性价比在下降。历史样本不足，但近期两条 short 均获胜、long 均失败或过期，说明顺势做空更契合当前环境。综合看，趋势方向偏空但入场位置不佳，我倾向给一条低信心的顺势空单，周期按 ADX>=25 且 EMA60 同向定为 trend，信心度控制在 50 左右以反映超卖反抽风险。",
+      "quality": "medium",
+      "qualityFlags": [
+        "atr_too_wide"
+      ],
       "status": "open",
       "resolvedAt": null,
       "resolvedPrice": null,
       "resolution": null,
-      "daysOpen": 13,
+      "daysOpen": 0,
       "maxDays": 20
     }
   ],
-  "updatedAt": "2026-11-20T02:29:11Z"
+  "updatedAt": "2026-11-21T02:40:52Z"
 }
