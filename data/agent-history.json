@@ -169,6 +169,32 @@
       "qualityFlags": [
         "atr_too_wide"
       ],
+      "status": "loss",
+      "resolvedAt": "2026-11-23",
+      "resolvedPrice": 651.03,
+      "resolution": "loss",
+      "daysOpen": 1,
+      "maxDays": 20
+    },
+    {
+      "id": "2040d7378576",
+      "ticker": "QQQ",
+      "createdAt": "2026-11-24T05:25:59Z",
+      "issuedAtClose": "2026-11-23",
+      "direction": "short",
+      "horizon": "trend",
+      "entry": 651.03,
+      "stop": 692.91,
+      "target": 588.22,
+      "sizePct": 25.0,
+      "atr": 20.9379,
+      "confidence": 52,
+      "reasoning": "EMA20 低于 EMA60 呈 death cross，价格双双跌破两均线，ADX31.4 且 -DI35.2 主导、MACD 柱为负，空头趋势结构完整；RSI42 偏低与近期胜率不佳故信心度压至 52。",
+      "thought": "Thought: 当前结构是明确的空头排列：EMA20(672) 低于 EMA60(697.68)，death cross，价格同时跌破两条均线（-3.12% / -6.69%）。ADX=31.4 且 -DI=35.2 明显高于 +DI=19.2，说明下跌趋势有强度而非震荡。MACD 柱 -3.263 仍为负，动能向下。唯一让我犹豫的是 RSI=42.2 已接近 40 下沿，短线有一定超卖修复风险，且近 7 条胜率仅 28.6%、总体 40%，我的空头信号近期表现不稳（short trend conf50 曾亏损）。但趋势跟踪的核心是顺大方向，当前没有反转证据（价格未收复 EMA20、DI 未交叉、MACD 柱未转正），因此维持偏空，但把信心度压到中等偏低以反映近期胜率不佳，并因 ADX>25 且 EMA60 同向向下选择 trend 周期。",
+      "quality": "medium",
+      "qualityFlags": [
+        "atr_too_wide"
+      ],
       "status": "open",
       "resolvedAt": null,
       "resolvedPrice": null,
@@ -177,5 +203,5 @@
       "maxDays": 20
     }
   ],
-  "updatedAt": "2026-11-21T02:40:52Z"
+  "updatedAt": "2026-11-24T05:25:59Z"
 }
